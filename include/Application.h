@@ -28,6 +28,6 @@ private:
     int init();
     void destroy();
 
-    void update(int dt);
+    void update(float dt);
     void render();
 };

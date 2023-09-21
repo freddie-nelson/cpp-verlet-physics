@@ -1,8 +1,17 @@
+#include "./Object.h"
+
+#include <vector>
+
 namespace Physics
 {
     class World
     {
     public:
-        void step(int dt);
+        World();
+
+        void step(float dt);
+
+    private:
+        std::vector<Object> objects;
     };
 }

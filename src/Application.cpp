@@ -26,7 +26,8 @@ int Application::run()
     {
         // update timestep
         const int now = time(NULL);
-        const int dt = now - lastUpdateTime;
+        const int diff = now - lastUpdateTime;
+        const float dt = diff / 1000;
         lastUpdateTime = now;
 
         // wait for sdl events to be processed
@@ -70,7 +71,7 @@ void Application::destroy()
     delete this;
 }
 
-void Application::update(int dt)
+void Application::update(float dt)
 {
     std::cout << dt << std::endl;
 }
