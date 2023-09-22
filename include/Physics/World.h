@@ -1,4 +1,6 @@
-#include "./Object.h"
+#pragma once
+
+#include "./Objects/Object.h"
 
 #include <vector>
 
@@ -11,7 +13,11 @@ namespace Physics
 
         void step(float dt);
 
+        std::vector<Object *> getObjects();
+        void addObject(Object *o);
+        bool removeObject(const Object *o);
+
     private:
-        std::vector<Object> objects;
+        std::vector<Object *> objects;
     };
 }
