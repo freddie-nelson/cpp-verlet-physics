@@ -9,21 +9,36 @@ namespace Physics
     class Object
     {
     public:
+        /**
+         * Changes the object's centre by the given vector.
+         */
+        void move(glm::vec2 move);
+
+        /**
+         * Applies the given force to the object at it's centre.
+         */
+        void applyForce(glm::vec2 force);
+
+        float getMass();
+        void setMass(float m);
+
+        float getRestitution();
+        void setRestitution(float r);
+
+        glm::vec2 getCentre();
+        void setCentre(glm::vec2 c);
+
         glm::vec2 getVelocity();
         void setVelocity(glm::vec2 v);
-
-        virtual glm::vec2 getPosition() = 0;
-        virtual void setPosition(glm::vec2 p) = 0;
 
         virtual std::vector<float> getSize() = 0;
         virtual bool setSize(std::vector<float> size) = 0;
 
-        /**
-         * Changes the object's position by the given vector.
-         */
-        virtual void move(glm::vec2 move) = 0;
-
     private:
+        float mass;
+        float restitution;
+
+        glm::vec2 centre;
         glm::vec2 velocity;
     };
 }

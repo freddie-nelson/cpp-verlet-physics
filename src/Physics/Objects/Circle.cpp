@@ -1,22 +1,12 @@
 #include "../../../include/Physics/Objects/Circle.h"
 
-Physics::Circle::Circle(glm::vec2 c, float r) : centre(c), radius(r)
+Physics::Circle::Circle(glm::vec2 c, float r, float m) : radius(r)
 {
-}
+    Object::setCentre(c);
+    Object::setMass(m);
 
-glm::vec2 Physics::Circle::getPosition()
-{
-    return centre;
-}
-
-void Physics::Circle::setPosition(glm::vec2 c)
-{
-    centre = c;
-}
-
-void Physics::Circle::move(glm::vec2 c)
-{
-    centre += c;
+    if (radius < 0)
+        radius = 0;
 }
 
 std::vector<float> Physics::Circle::getSize()

@@ -2,7 +2,6 @@
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Circle.h"
 
-#include <time.h>
 #include <iostream>
 
 Application::Application(std::string windowTitle, int windowWidth, int windowHeight) : windowTitle(windowTitle), windowWidth(windowWidth), windowHeight(windowHeight)
@@ -22,15 +21,17 @@ int Application::run()
         return initCode;
     }
 
-    int lastUpdateTime = time(NULL);
+    auto lastUpdateTime = SDL_GetPerformanceCounter();
 
     while (state == ApplicationState::RUNNING)
     {
         // update timestep
-        const int now = time(NULL);
-        const int diff = now - lastUpdateTime;
-        const float dt = diff / 1000;
+        const auto now = SDL_GetPerformanceCounter();
+        const auto diff = now - lastUpdateTime;
         lastUpdateTime = now;
+
+        // dt in seconds
+        const double dt = diff / (double)SDL_GetPerformanceFrequency();
 
         // wait for sdl events to be processed
         SDL_Event event;
@@ -67,7 +68,10 @@ int Application::init()
     // init physics
     world = new Physics::World();
 
-    world->addObject(new Physics::Circle(glm::vec2{200, 200}, 50));
+    auto c = new Physics::Circle(glm::vec2{200, 200}, 50);
+    world->addObject(c);
+
+    c->applyForce(glm::vec2{60, 0});
 
     return 0;
 }
@@ -107,7 +111,7 @@ void Application::render()
         {
             const Renderer::Circle circle{
                 centre :
-                    o->getPosition(),
+                    o->getCentre(),
                 radius : o->getSize()[0]
             };
 

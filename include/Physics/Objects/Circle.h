@@ -7,14 +7,16 @@ namespace Physics
     class Circle : public Object
     {
     public:
-        Circle(glm::vec2 c, float r);
+        Circle(glm::vec2 c, float r, float m = 1.0);
 
-        glm::vec2 getPosition();
-        void setPosition(glm::vec2 c);
-
-        void move(glm::vec2 c);
-
+        /**
+         * Returns the size of the circle as a vector containing the radius.
+         */
         std::vector<float> getSize();
+
+        /**
+         * Sets the radius of the circle to the given vector's first element.
+         */
         bool setSize(std::vector<float> size);
 
         float getRadius();
