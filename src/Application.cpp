@@ -123,7 +123,8 @@ void Application::update(float dt)
     float subDt = dt / substeps;
 
     // print dt
-    std::cout << "\rdt: " << dt << ", subDt: " << subDt;
+    // std::cout << "\rdt: " << dt << ", subDt: " << subDt;
+    std::cout << "\rke: " << world->calculateKineticEnergy();
 
     for (int i = 0; i < substeps; i++)
     {

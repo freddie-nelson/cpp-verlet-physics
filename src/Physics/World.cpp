@@ -5,6 +5,7 @@
 #include "../../include/Physics/Collision/NarrowPhase.h"
 #include "../../include/Physics/Collision/Resolution.h"
 
+#include <glm/glm.hpp>
 #include <iostream>
 #include <stdexcept>
 
@@ -56,6 +57,25 @@ void Physics::World::step(float dt)
     // std::cout << std::endl
     //           << "x: " << o->getPosition().x << " y: " << o->getPosition().y << std::endl
     //           << "ax: " << o->getAcceleration().x << " ay: " << o->getAcceleration().y << std::endl;
+}
+
+float Physics::World::calculateKineticEnergy()
+{
+    float ke = 0.0f;
+
+    for (auto o : objects)
+    {
+        auto points = o->getPoints();
+
+        for (auto p : points)
+        {
+            glm::vec2 velocity = p->getPosition() - p->getOldPosition();
+
+            ke += 0.5f * o->getMass() * glm::dot(velocity, velocity);
+        }
+    }
+
+    return ke;
 }
 
 glm::vec2 Physics::World::getGravity()

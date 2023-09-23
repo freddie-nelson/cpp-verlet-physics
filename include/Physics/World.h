@@ -19,6 +19,8 @@ namespace Physics
 
         void step(float dt);
 
+        float calculateKineticEnergy();
+
         glm::vec2 getGravity();
         void setGravity(glm::vec2 g);
 
