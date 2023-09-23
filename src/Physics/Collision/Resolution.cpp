@@ -4,15 +4,15 @@
 #include <math.h>
 #include <iostream>
 
-void Physics::resolveCollisions(std::vector<Manifold *> &manifolds)
+void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
 {
-    for (auto m : manifolds)
+    for (auto m : *manifolds)
     {
         auto [a, b, pa, pb, normal, depth] = *m;
 
-        std::cout << "start collision resolution" << std::endl;
-        std::cout << "mass: " << a->getMass() << std::endl;
-        std::cout << "velocity before: " << pa->getVelocity().x << ", " << pa->getVelocity().y << std::endl;
+        // std::cout << "start collision resolution" << std::endl;
+        // std::cout << "mass: " << a->getMass() << std::endl;
+        // std::cout << "velocity before: " << pa->getVelocity().x << ", " << pa->getVelocity().y << std::endl;
 
         float invMassA = a->getInvMass();
         float invMassB = b->getInvMass();
@@ -28,6 +28,6 @@ void Physics::resolveCollisions(std::vector<Manifold *> &manifolds)
         pa->move(moveVector * massCoeffA);
         pb->move(-moveVector * massCoeffB);
 
-        std::cout << "velocity after: " << pa->getVelocity().x << ", " << pa->getVelocity().y << std::endl;
+        // std::cout << "velocity after: " << pa->getVelocity().x << ", " << pa->getVelocity().y << std::endl;
     }
 }

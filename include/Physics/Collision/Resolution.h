@@ -2,5 +2,5 @@
 
 namespace Physics
 {
-    void resolveCollisions(std::vector<Manifold *> &manifolds);
+    void resolveCollisions(std::vector<Manifold *> *manifolds);
 }

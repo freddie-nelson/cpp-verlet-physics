@@ -6,8 +6,8 @@
 
 namespace Physics
 {
-    std::vector<Manifold *> narrowPhase(std::vector<Object *> &objects);
-    void cleanupManifolds(std::vector<Manifold *> &manifolds);
+    std::vector<Manifold *> *narrowPhase(std::vector<Object *> &objects);
+    void cleanupManifolds(std::vector<Manifold *> *manifolds);
 
     Manifold *circleCircle(Circle *a, Circle *b);
 }

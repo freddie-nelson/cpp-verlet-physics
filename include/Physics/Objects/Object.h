@@ -42,7 +42,7 @@ namespace Physics
         glm::vec2 getFriction();
         void setFriction(glm::vec2 f);
 
-        std::vector<Point *> getPoints();
+        std::vector<Point *> &getPoints();
         void setPoints(std::vector<glm::vec2> &p);
 
         void addPoint(glm::vec2 p);

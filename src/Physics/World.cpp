@@ -24,7 +24,6 @@ void Physics::World::step(float dt)
 
         for (auto p : points)
         {
-
             // update position
             solvePosition(p, dt);
 
@@ -105,7 +104,7 @@ void Physics::World::setFriction(glm::vec2 f)
     friction = f;
 }
 
-std::vector<Physics::Object *> Physics::World::getObjects()
+std::vector<Physics::Object *> &Physics::World::getObjects()
 {
     return objects;
 }

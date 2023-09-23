@@ -81,34 +81,48 @@ int Application::init()
     world = new Physics::World(glm::vec2(0.0f, 0.0f));
 
     // test objects
-    // srand(time(NULL));
+    srand(time(NULL));
 
-    // for (int i = 0; i < 50; i++)
-    // {
-    //     float x = rand() % windowWidth;
-    //     float y = rand() % windowHeight;
-    //     float r = rand() % 15 + 10;
+    float r = 20.0f;
+    float x = 50.0f;
+    float y = 100.0f;
 
-    //     auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f);
+    for (int i = 0; i < 100; i++)
+    {
+        int fMag = 10000;
+        glm::vec2 f = glm::vec2(rand() % fMag - fMag / 2, rand() % fMag - fMag / 2);
 
-    //     world->addObject(c);
-    // }
+        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 1.0f);
+        c->applyForce(f, c->getCentre());
 
-    float r = 25;
-    float m1 = 10;
-    float m2 = 10;
-    float restitution = 1.0f;
+        world->addObject(c);
 
-    float force = 50000;
+        // update x and y
+        x += r * 3;
+        if (x + r > windowWidth - 50)
+        {
+            x = 50.0f;
+            y += r * 3;
+        }
+    }
 
-    auto c1 = new Physics::Circle(glm::vec2(50, windowHeight / 2.0f), r, m1, restitution);
-    auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), r, m2, restitution);
+    std::cout << "starting ke: " << world->calculateKineticEnergy() << std::endl;
 
-    c1->applyForce(glm::vec2(force, 0), c1->getCentre());
-    c2->applyForce(glm::vec2(-force * (m2 / m1), 0), c2->getCentre());
+    // float r = 25;
+    // float m1 = 10;
+    // float m2 = 20;
+    // float restitution = 1.0f;
 
-    world->addObject(c1);
-    world->addObject(c2);
+    // float force = 50000;
+
+    // auto c1 = new Physics::Circle(glm::vec2(50, windowHeight / 2.0f), r, m1, restitution);
+    // auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), r, m2, restitution);
+
+    // c1->applyForce(glm::vec2(force, 0), c1->getCentre());
+    // c2->applyForce(glm::vec2(-force * (m2 / m1), 0), c2->getCentre());
+
+    // world->addObject(c1);
+    // world->addObject(c2);
 
     return 0;
 }
@@ -128,8 +142,7 @@ void Application::update(float dt)
     // update physics
 
     // print dt
-    // std::cout << "\rdt: " << dt << ", subDt: " << subDt;
-    std::cout << "\rke: " << world->calculateKineticEnergy();
+    std::cout << "\rke: " << world->calculateKineticEnergy() << ", dt: " << dt << "                     ";
 
     world->step(dt);
 }

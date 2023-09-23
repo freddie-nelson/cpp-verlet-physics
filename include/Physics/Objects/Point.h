@@ -54,7 +54,7 @@ namespace Physics
         glm::vec2 position;
         glm::vec2 oldPosition;
 
-        glm::vec2 acceleration;
-        glm::vec2 newAcceleration;
+        glm::vec2 acceleration = glm::vec2(0.0f, 0.0f);
+        glm::vec2 newAcceleration = glm::vec2(0.0f, 0.0f);
     };
 }

@@ -27,7 +27,7 @@ namespace Physics
         glm::vec2 getFriction();
         void setFriction(glm::vec2 f);
 
-        std::vector<Object *> getObjects();
+        std::vector<Object *> &getObjects();
         void addObject(Object *o);
         bool removeObject(const Object *o);
 

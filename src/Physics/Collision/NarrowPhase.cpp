@@ -3,9 +3,9 @@
 #include <glm/glm.hpp>
 #include <stdexcept>
 
-std::vector<Physics::Manifold *> Physics::narrowPhase(std::vector<Object *> &objects)
+std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<Object *> &objects)
 {
-    std::vector<Manifold *> manifolds;
+    std::vector<Manifold *> *manifolds = new std::vector<Manifold *>();
 
     for (auto a : objects)
     {
@@ -26,28 +26,43 @@ std::vector<Physics::Manifold *> Physics::narrowPhase(std::vector<Object *> &obj
                 throw std::invalid_argument("Unsupported object type");
             }
 
-            if (m->depth <= 0.0f)
+            if (m == nullptr)
                 continue;
 
-            manifolds.push_back(m);
+            if (m->depth <= 0.0f)
+            {
+                delete m;
+                continue;
+            }
+
+            manifolds->push_back(m);
         }
     }
 
     return manifolds;
 }
 
-void Physics::cleanupManifolds(std::vector<Manifold *> &manifolds)
+void Physics::cleanupManifolds(std::vector<Manifold *> *manifolds)
 {
-    for (auto m : manifolds)
+    for (auto m : *manifolds)
     {
         delete m;
     }
 
-    manifolds.clear();
+    manifolds->clear();
+    delete manifolds;
 }
 
 Physics::Manifold *Physics::circleCircle(Circle *a, Circle *b)
 {
+    glm::vec2 aToB = b->getCentre() - a->getCentre();
+
+    float distance = glm::length(aToB);
+    float maxDistance = a->getRadius() + b->getRadius();
+
+    if (distance > maxDistance)
+        return nullptr;
+
     Manifold *m = new Manifold();
 
     m->a = a;
@@ -56,13 +71,7 @@ Physics::Manifold *Physics::circleCircle(Circle *a, Circle *b)
     m->pa = a->getPoints()[0];
     m->pb = b->getPoints()[0];
 
-    glm::vec2 aToB = b->getCentre() - a->getCentre();
-
     m->normal = glm::normalize(aToB);
-
-    float maxDistance = a->getRadius() + b->getRadius();
-    float distance = glm::length(aToB);
-
     m->depth = maxDistance - distance;
 
     return m;

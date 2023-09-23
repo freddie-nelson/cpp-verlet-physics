@@ -80,7 +80,7 @@ void Physics::Object::setFriction(glm::vec2 f)
     }
 }
 
-std::vector<Physics::Point *> Physics::Object::getPoints()
+std::vector<Physics::Point *> &Physics::Object::getPoints()
 {
     return points;
 }

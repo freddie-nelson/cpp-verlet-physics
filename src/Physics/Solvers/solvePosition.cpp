@@ -1,5 +1,7 @@
 #include "../../../include/Physics/Solvers/solvePosition.h"
 
+#include <iostream>
+
 void Physics::solvePosition(Point *p, float dt)
 {
     glm::vec2 currPos = p->getPosition();
