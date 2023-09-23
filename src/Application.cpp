@@ -26,7 +26,7 @@ int Application::run()
     const int desiredFps = 60;
     const int desiredFrameTime = 1000 / desiredFps;
 
-    auto lastUpdateTime = SDL_GetTicks64();
+    auto lastUpdateTime = SDL_GetTicks64() - desiredFrameTime;
 
     while (state == ApplicationState::RUNNING)
     {
@@ -78,19 +78,30 @@ int Application::init()
     renderer = new Renderer::SDLRenderer(sdlRenderer);
 
     // init physics
-    world = new Physics::World(glm::vec2(0.0f, 10.0f));
+    world = new Physics::World(glm::vec2(0.0f, 0.0f));
 
     // test objects
-    srand(time(NULL));
+    // srand(time(NULL));
 
-    for (int i = 0; i < 50; i++)
-    {
-        float x = rand() % windowWidth;
-        float y = rand() % windowHeight;
-        auto c = new Physics::Circle(glm::vec2(x, y), 20.0f);
+    // for (int i = 0; i < 50; i++)
+    // {
+    //     float x = rand() % windowWidth;
+    //     float y = rand() % windowHeight;
+    //     float r = rand() % 15 + 10;
 
-        world->addObject(c);
-    }
+    //     auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f);
+
+    //     world->addObject(c);
+    // }
+
+    auto c1 = new Physics::Circle(glm::vec2(50, windowHeight / 2.0f), 25, 10);
+    auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), 25, 100);
+
+    c1->applyForce(glm::vec2(500000, 0), c1->getCentre());
+    c2->applyForce(glm::vec2(-500000 * 4, 0), c2->getCentre());
+
+    world->addObject(c1);
+    world->addObject(c2);
 
     return 0;
 }
@@ -108,7 +119,7 @@ void Application::update(float dt)
 {
 
     // update physics
-    int substeps = 1;
+    int substeps = 8;
     float subDt = dt / substeps;
 
     // print dt
@@ -130,12 +141,13 @@ void Application::render()
 
     for (auto o : world->getObjects())
     {
-        if (typeid(*o) == typeid(Physics::Circle))
+        if (o->getType() == Physics::ObjectType::CircleObject)
         {
+            Physics::Circle *c = static_cast<Physics::Circle *>(o);
+
             const Renderer::Circle circle{
-                centre :
-                    o->getCentre(),
-                radius : o->getSize()[0]
+                centre : c->getCentre(),
+                radius : c->getRadius()
             };
 
             renderer->circle(circle, color);

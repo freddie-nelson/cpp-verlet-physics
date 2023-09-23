@@ -1,6 +1,13 @@
 #include "../../../include/Physics/Solvers/solvePosition.h"
 
-void Physics::solvePosition(Physics::Object *o, float dt)
+void Physics::solvePosition(Point *p, float dt)
 {
-    o->setCentre(o->getCentre() + o->getVelocity() * dt + o->getAcceleration() * (dt * dt * 0.5f));
+    glm::vec2 currPos = p->getPosition();
+    glm::vec2 oldPos = p->getOldPosition();
+    glm::vec2 acc = p->getAcceleration();
+
+    glm::vec2 newPos = currPos + (currPos - oldPos) + (acc * (dt * dt));
+
+    p->setOldPosition(currPos);
+    p->setPosition(newPos);
 }

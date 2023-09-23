@@ -1,8 +1,9 @@
 #include "../../include/Physics/World.h"
 #include "../../include/Physics/Solvers/solvePosition.h"
 #include "../../include/Physics/Solvers/solveGravity.h"
-#include "../../include/Physics/Solvers/solveDamping.h"
-#include "../../include/Physics/Solvers/solveVelocity.h"
+#include "../../include/Physics/Solvers/solveFriction.h"
+#include "../../include/Physics/Collision/NarrowPhase.h"
+#include "../../include/Physics/Collision/Resolution.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -18,29 +19,63 @@ void Physics::World::step(float dt)
     // run solvers
     for (auto o : objects)
     {
-        // update position
-        solvePosition(o, dt);
+        auto points = o->getPoints();
 
-        // apply forces
-        // calculates o.newAcceleration
-        solveGravity(o, gravity, dt);
+        for (auto p : points)
+        {
 
-        // calculate new velocity
-        solveVelocity(o, dt);
+            // update position
+            solvePosition(p, dt);
 
-        // apply damping
-        solveDamping(o, friction, dt);
+            // apply forces
+            // calculates o.newAcceleration
+            solveGravity(p, gravity, dt);
 
-        // update acceleration
-        o->setAcceleration(o->getNewAcceleration());
-        o->setNewAcceleration(glm::vec2(0.0, 0.0));
+            // apply friction
+            solveFriction(p, friction, dt);
+
+            // update acceleration
+            p->setAcceleration(p->getNewAcceleration());
+            p->setNewAcceleration(glm::vec2(0.0, 0.0));
+        }
     }
 
-    // auto o = objects[0];
+    // run broad phase collision detection
+    // TODO
+
+    // run narrow phase collision detection
+    auto manifolds = narrowPhase(objects);
+
+    // run collision resolution
+    resolveCollisions(manifolds, dt);
+
+    // delete manifolds
+    cleanupManifolds(manifolds);
+
+    // auto o = objects[0]->getPoints()[0];
     // std::cout << std::endl
-    //           << "x: " << o->getCentre().x << " y: " << o->getCentre().y << std::endl
-    //           << "vx: " << o->getVelocity().x << " vy: " << o->getVelocity().y << std::endl
+    //           << "x: " << o->getPosition().x << " y: " << o->getPosition().y << std::endl
     //           << "ax: " << o->getAcceleration().x << " ay: " << o->getAcceleration().y << std::endl;
+}
+
+glm::vec2 Physics::World::getGravity()
+{
+    return gravity;
+}
+
+void Physics::World::setGravity(glm::vec2 g)
+{
+    gravity = g;
+}
+
+glm::vec2 Physics::World::getFriction()
+{
+    return friction;
+}
+
+void Physics::World::setFriction(glm::vec2 f)
+{
+    friction = f;
 }
 
 std::vector<Physics::Object *> Physics::World::getObjects()

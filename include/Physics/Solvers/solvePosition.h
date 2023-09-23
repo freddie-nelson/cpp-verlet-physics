@@ -1,6 +1,6 @@
-#include "../Objects/Object.h"
+#include "../Objects/Point.h"
 
 namespace Physics
 {
-    void solvePosition(Physics::Object *o, float dt);
+    void solvePosition(Physics::Point *o, float dt);
 }

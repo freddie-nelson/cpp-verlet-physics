@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Objects/Object.h"
+#include "../Objects/Point.h"
 
 namespace Physics
 {
-    void solveGravity(Physics::Object *o, glm::vec2 gravity, float dt);
+    void solveGravity(Physics::Point *o, glm::vec2 gravity, float dt);
 }

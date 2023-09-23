@@ -1,32 +1,20 @@
 #include "../../../include/Physics/Objects/Circle.h"
 
-Physics::Circle::Circle(glm::vec2 c, float r, float m) : radius(r)
-{
-    Object::setCentre(c);
-    Object::setMass(m);
+#include <stdexcept>
 
-    if (radius < 0)
-        radius = 0;
+Physics::Circle::Circle(glm::vec2 centre, float radius, float mass, float restitution, glm::vec2 friction) : Object(ObjectType::CircleObject, *(new std::vector<glm::vec2>{centre}), mass, restitution, friction)
+{
+    setRadius(radius);
 }
 
-std::vector<float> Physics::Circle::getSize()
+glm::vec2 Physics::Circle::getCentre()
 {
-    std::vector<float> s;
-    s.push_back(radius);
-
-    return s;
+    return getPoints()[0]->getPosition();
 }
 
-bool Physics::Circle::setSize(std::vector<float> size)
+void Physics::Circle::setCentre(glm::vec2 c)
 {
-    if (size.size() != 1)
-        return false;
-    if (size[0] < 0)
-        return false;
-
-    radius = size[0];
-
-    return true;
+    setPoints(*(new std::vector<glm::vec2>{c}));
 }
 
 float Physics::Circle::getRadius()
@@ -36,5 +24,8 @@ float Physics::Circle::getRadius()
 
 void Physics::Circle::setRadius(float r)
 {
+    if (r < 0)
+        throw std::invalid_argument("Radius must be greater than or equal to 0.");
+
     radius = r;
 }
