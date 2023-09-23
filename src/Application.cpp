@@ -95,10 +95,10 @@ int Application::init()
     // }
 
     auto c1 = new Physics::Circle(glm::vec2(50, windowHeight / 2.0f), 25, 10);
-    auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), 25, 100);
+    auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), 25, 100, 0.0f);
 
-    c1->applyForce(glm::vec2(500000, 0), c1->getCentre());
-    c2->applyForce(glm::vec2(-500000 * 4, 0), c2->getCentre());
+    c1->applyForce(glm::vec2(50000, 0), c1->getCentre());
+    c2->applyForce(glm::vec2(-50000 * 8, 0), c2->getCentre());
 
     world->addObject(c1);
     world->addObject(c2);
@@ -119,17 +119,12 @@ void Application::update(float dt)
 {
 
     // update physics
-    int substeps = 8;
-    float subDt = dt / substeps;
 
     // print dt
     // std::cout << "\rdt: " << dt << ", subDt: " << subDt;
     std::cout << "\rke: " << world->calculateKineticEnergy();
 
-    for (int i = 0; i < substeps; i++)
-    {
-        world->step(subDt);
-    }
+    world->step(dt);
 }
 
 void Application::render()

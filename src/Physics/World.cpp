@@ -41,17 +41,24 @@ void Physics::World::step(float dt)
         }
     }
 
-    // run broad phase collision detection
-    // TODO
+    // solve constraints
+    int substeps = 8;
+    float subDt = dt / substeps;
 
-    // run narrow phase collision detection
-    auto manifolds = narrowPhase(objects);
+    for (int i = 0; i < subDt; i++)
+    {
+        // run broad phase collision detection
+        // TODO
 
-    // run collision resolution
-    resolveCollisions(manifolds, dt);
+        // run narrow phase collision detection
+        auto manifolds = narrowPhase(objects);
 
-    // delete manifolds
-    cleanupManifolds(manifolds);
+        // run collision resolution
+        resolveCollisions(manifolds);
+
+        // delete manifolds
+        cleanupManifolds(manifolds);
+    }
 
     // auto o = objects[0]->getPoints()[0];
     // std::cout << std::endl

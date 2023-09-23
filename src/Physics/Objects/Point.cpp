@@ -94,6 +94,11 @@ void Physics::Point::setOldPosition(glm::vec2 p)
     oldPosition = p;
 }
 
+glm::vec2 Physics::Point::getVelocity()
+{
+    return position - oldPosition;
+}
+
 glm::vec2 Physics::Point::getAcceleration()
 {
     return acceleration;

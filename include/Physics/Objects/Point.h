@@ -38,6 +38,8 @@ namespace Physics
         glm::vec2 getOldPosition();
         void setOldPosition(glm::vec2 p);
 
+        glm::vec2 getVelocity();
+
         glm::vec2 getAcceleration();
         void setAcceleration(glm::vec2 a);
 
