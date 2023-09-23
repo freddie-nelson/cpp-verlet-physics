@@ -9,7 +9,13 @@ namespace Physics
     class World
     {
     public:
-        World();
+        /**
+         * Creates a new world
+         *
+         * @param gravity The gravity to apply to all objects in the world
+         * @param friction The friction to apply to all objects in the world (0 to 1)
+         */
+        World(glm::vec2 gravity = glm::vec2(0.0f, 0.0f), glm::vec2 friction = glm::vec2(1.0f, 1.0f));
 
         void step(float dt);
 
@@ -18,6 +24,9 @@ namespace Physics
         bool removeObject(const Object *o);
 
     private:
+        glm::vec2 gravity;
+        glm::vec2 friction;
+
         std::vector<Object *> objects;
     };
 }

@@ -2,6 +2,8 @@
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Circle.h"
 
+#include <random>
+#include <time.h>
 #include <iostream>
 
 Application::Application(std::string windowTitle, int windowWidth, int windowHeight) : windowTitle(windowTitle), windowWidth(windowWidth), windowHeight(windowHeight)
@@ -21,17 +23,20 @@ int Application::run()
         return initCode;
     }
 
-    auto lastUpdateTime = SDL_GetPerformanceCounter();
+    const int desiredFps = 60;
+    const int desiredFrameTime = 1000 / desiredFps;
+
+    auto lastUpdateTime = SDL_GetTicks64();
 
     while (state == ApplicationState::RUNNING)
     {
         // update timestep
-        const auto now = SDL_GetPerformanceCounter();
+        const auto now = SDL_GetTicks64();
         const auto diff = now - lastUpdateTime;
         lastUpdateTime = now;
 
         // dt in seconds
-        const double dt = diff / (double)SDL_GetPerformanceFrequency();
+        const float dt = (float)diff / 1000.0f;
 
         // wait for sdl events to be processed
         SDL_Event event;
@@ -45,6 +50,13 @@ int Application::run()
 
         update(dt);
         render();
+
+        // wait until frame time is reached
+        const auto frameEndTime = now + desiredFrameTime;
+        while (SDL_GetTicks64() < frameEndTime)
+        {
+            SDL_Delay(1);
+        }
     }
 
     return 0;
@@ -66,12 +78,19 @@ int Application::init()
     renderer = new Renderer::SDLRenderer(sdlRenderer);
 
     // init physics
-    world = new Physics::World();
+    world = new Physics::World(glm::vec2(0.0f, 10.0f));
 
-    auto c = new Physics::Circle(glm::vec2{200, 200}, 50);
-    world->addObject(c);
+    // test objects
+    srand(time(NULL));
 
-    c->applyForce(glm::vec2{60, 0});
+    for (int i = 0; i < 50; i++)
+    {
+        float x = rand() % windowWidth;
+        float y = rand() % windowHeight;
+        auto c = new Physics::Circle(glm::vec2(x, y), 20.0f);
+
+        world->addObject(c);
+    }
 
     return 0;
 }
@@ -87,9 +106,13 @@ void Application::destroy()
 
 void Application::update(float dt)
 {
+
     // update physics
-    int substeps = 8;
+    int substeps = 1;
     float subDt = dt / substeps;
+
+    // print dt
+    std::cout << "\rdt: " << dt << ", subDt: " << subDt;
 
     for (int i = 0; i < substeps; i++)
     {

@@ -7,7 +7,7 @@ namespace Physics
     class Circle : public Object
     {
     public:
-        Circle(glm::vec2 c, float r, float m = 1.0);
+        Circle(glm::vec2 c, float r, float m = 1.0f);
 
         /**
          * Returns the size of the circle as a vector containing the radius.
