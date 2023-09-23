@@ -54,6 +54,7 @@ Physics::Manifold *Physics::circleCircle(Circle *a, Circle *b)
     m->b = b;
 
     m->pa = a->getPoints()[0];
+    m->pb = b->getPoints()[0];
 
     glm::vec2 aToB = b->getCentre() - a->getCentre();
 

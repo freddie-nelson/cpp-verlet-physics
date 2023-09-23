@@ -10,6 +10,7 @@ namespace Physics
         Object *b;
 
         Point *pa;
+        Point *pb;
 
         glm::vec2 normal;
         float depth;

@@ -94,11 +94,18 @@ int Application::init()
     //     world->addObject(c);
     // }
 
-    auto c1 = new Physics::Circle(glm::vec2(50, windowHeight / 2.0f), 25, 10);
-    auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), 25, 100, 0.0f);
+    float r = 25;
+    float m1 = 10;
+    float m2 = 10;
+    float restitution = 1.0f;
 
-    c1->applyForce(glm::vec2(50000, 0), c1->getCentre());
-    c2->applyForce(glm::vec2(-50000 * 8, 0), c2->getCentre());
+    float force = 50000;
+
+    auto c1 = new Physics::Circle(glm::vec2(50, windowHeight / 2.0f), r, m1, restitution);
+    auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), r, m2, restitution);
+
+    c1->applyForce(glm::vec2(force, 0), c1->getCentre());
+    c2->applyForce(glm::vec2(-force * (m2 / m1), 0), c2->getCentre());
 
     world->addObject(c1);
     world->addObject(c2);

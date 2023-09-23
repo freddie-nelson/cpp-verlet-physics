@@ -8,24 +8,26 @@ void Physics::resolveCollisions(std::vector<Manifold *> &manifolds)
 {
     for (auto m : manifolds)
     {
-        auto [a, b, pa, normal, depth] = *m;
+        auto [a, b, pa, pb, normal, depth] = *m;
 
-        glm::vec2 oldPosition = pa->getPosition();
+        std::cout << "start collision resolution" << std::endl;
+        std::cout << "mass: " << a->getMass() << std::endl;
+        std::cout << "velocity before: " << pa->getVelocity().x << ", " << pa->getVelocity().y << std::endl;
 
-        auto moveVector = -normal * depth * 0.5f;
-        pa->move(moveVector);
-
-        // handle restitution
         float invMassA = a->getInvMass();
         float invMassB = b->getInvMass();
+        float totalInvMass = invMassA + invMassB;
 
-        float massCoeff = (invMassA / (invMassA + invMassB));
+        float massCoeffA = invMassA / totalInvMass;
+        float massCoeffB = invMassB / totalInvMass;
+
         float restitutionCoeff = std::min(a->getRestitution(), b->getRestitution());
 
-        glm::vec2 velocity = pa->getVelocity();
-        float velocityAlongNormal = glm::dot(velocity, normal);
-        glm::vec2 normalVelocity = normal * velocityAlongNormal;
+        auto moveVector = -normal * depth * 0.5f * (restitutionCoeff + 1.0f);
 
-        pa->setOldPosition((restitutionCoeff == 0 ? pa->getPosition() : oldPosition) + normalVelocity * restitutionCoeff);
+        pa->move(moveVector * massCoeffA);
+        pb->move(-moveVector * massCoeffB);
+
+        std::cout << "velocity after: " << pa->getVelocity().x << ", " << pa->getVelocity().y << std::endl;
     }
 }
