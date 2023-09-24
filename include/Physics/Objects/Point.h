@@ -9,7 +9,7 @@ namespace Physics
     class Point
     {
     public:
-        Point(glm::vec2 position, float mass = 1.0f, float restitution = 1.0f, glm::vec2 friction = glm::vec2(0.0f, 0.0f));
+        Point(glm::vec2 position, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f);
 
         /**
          * Changes the point's position by the given vector.
@@ -29,27 +29,27 @@ namespace Physics
         float getRestitution();
         void setRestitution(float r);
 
-        glm::vec2 getFriction();
-        void setFriction(glm::vec2 f);
+        float getFriction();
+        void setFriction(float f);
 
-        glm::vec2 getPosition();
+        glm::vec2 &getPosition();
         void setPosition(glm::vec2 p);
 
-        glm::vec2 getOldPosition();
+        glm::vec2 &getOldPosition();
         void setOldPosition(glm::vec2 p);
 
         glm::vec2 getVelocity();
 
-        glm::vec2 getAcceleration();
+        glm::vec2 &getAcceleration();
         void setAcceleration(glm::vec2 a);
 
-        glm::vec2 getNewAcceleration();
+        glm::vec2 &getNewAcceleration();
         void setNewAcceleration(glm::vec2 a);
 
     private:
         float mass = 1.0f;
         float restitution = 1.0f;
-        glm::vec2 friction = glm::vec2(0.0f, 0.0f);
+        float friction = 0.0f;
 
         glm::vec2 position;
         glm::vec2 oldPosition;

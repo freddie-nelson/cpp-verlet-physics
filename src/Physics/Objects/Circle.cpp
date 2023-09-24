@@ -2,14 +2,9 @@
 
 #include <stdexcept>
 
-Physics::Circle::Circle(glm::vec2 centre, float radius, float mass, float restitution, glm::vec2 friction) : Object(ObjectType::CircleObject, *(new std::vector<glm::vec2>{centre}), mass, restitution, friction)
+Physics::Circle::Circle(glm::vec2 centre, float radius, float mass, float restitution, float friction) : Object(ObjectType::CircleObject, *(new std::vector<glm::vec2>{centre}), mass, restitution, friction)
 {
     setRadius(radius);
-}
-
-glm::vec2 Physics::Circle::getCentre()
-{
-    return getPoints()[0]->getPosition();
 }
 
 void Physics::Circle::setCentre(glm::vec2 c)
@@ -28,4 +23,12 @@ void Physics::Circle::setRadius(float r)
         throw std::invalid_argument("Radius must be greater than or equal to 0.");
 
     radius = r;
+}
+
+Physics::AABB Physics::Circle::getAABB()
+{
+    auto centre = getCentre();
+    auto r = glm::vec2(radius, radius);
+
+    return AABB{min : centre - r, max : centre + r};
 }

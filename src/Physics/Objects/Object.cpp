@@ -2,12 +2,16 @@
 
 #include <stdexcept>
 
-Physics::Object::Object(ObjectType type, std::vector<glm::vec2> &points, float mass, float restitution, glm::vec2 friction) : type(type)
+int Physics::Object::nextId = 0;
+
+Physics::Object::Object(ObjectType type, std::vector<glm::vec2> &points, float mass, float restitution, float friction) : type(type)
 {
     setPoints(points);
     setMass(mass);
     setRestitution(restitution);
     setFriction(friction);
+
+    id = nextId++;
 }
 
 void Physics::Object::move(glm::vec2 move)
@@ -65,12 +69,12 @@ void Physics::Object::setRestitution(float r)
     }
 }
 
-glm::vec2 Physics::Object::getFriction()
+float Physics::Object::getFriction()
 {
     return friction;
 }
 
-void Physics::Object::setFriction(glm::vec2 f)
+void Physics::Object::setFriction(float f)
 {
     friction = f;
 
@@ -134,7 +138,33 @@ Physics::Point *Physics::Object::getPoint(glm::vec2 p)
     return nullptr;
 }
 
+glm::vec2 Physics::Object::getCentre()
+{
+    if (points.size() == 0)
+        throw std::invalid_argument("Object has no points");
+    if (points.size() == 1)
+        return points[0]->getPosition();
+
+    // calculate centre of all points
+    // just the average of all points
+    glm::vec2 centre = glm::vec2(0.0f, 0.0f);
+
+    for (auto p : points)
+    {
+        centre += p->getPosition();
+    }
+
+    centre /= points.size();
+
+    return centre;
+}
+
 Physics::ObjectType Physics::Object::getType()
 {
     return type;
+}
+
+int Physics::Object::getId()
+{
+    return id;
 }

@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-Physics::Point::Point(glm::vec2 position, float mass, float restitution, glm::vec2 friction)
+Physics::Point::Point(glm::vec2 position, float mass, float restitution, float friction)
 {
     if (mass <= 0)
         throw std::invalid_argument("Mass must be greater than or equal to 0.");
@@ -55,26 +55,17 @@ void Physics::Point::setRestitution(float r)
     restitution = r;
 }
 
-glm::vec2 Physics::Point::getFriction()
+float Physics::Point::getFriction()
 {
     return friction;
 }
 
-void Physics::Point::setFriction(glm::vec2 f)
+void Physics::Point::setFriction(float f)
 {
-    if (f.x < 0)
-        f.x = 0;
-    else if (f.x > 1)
-        f.x = 1;
-    if (f.y < 0)
-        f.y = 0;
-    else if (f.y > 1)
-        f.y = 1;
-
     friction = f;
 }
 
-glm::vec2 Physics::Point::getPosition()
+glm::vec2 &Physics::Point::getPosition()
 {
     return position;
 }
@@ -84,7 +75,7 @@ void Physics::Point::setPosition(glm::vec2 p)
     position = p;
 }
 
-glm::vec2 Physics::Point::getOldPosition()
+glm::vec2 &Physics::Point::getOldPosition()
 {
     return oldPosition;
 }
@@ -99,7 +90,7 @@ glm::vec2 Physics::Point::getVelocity()
     return position - oldPosition;
 }
 
-glm::vec2 Physics::Point::getAcceleration()
+glm::vec2 &Physics::Point::getAcceleration()
 {
     return acceleration;
 }
@@ -109,7 +100,7 @@ void Physics::Point::setAcceleration(glm::vec2 a)
     acceleration = a;
 }
 
-glm::vec2 Physics::Point::getNewAcceleration()
+glm::vec2 &Physics::Point::getNewAcceleration()
 {
     return newAcceleration;
 }

@@ -19,9 +19,9 @@ void Renderer::SDLRenderer::present()
 
 void Renderer::SDLRenderer::circle(const Circle &circle, const Color &color)
 {
-    int x = floor(circle.centre[0]);
-    int y = floor(circle.centre[1]);
-    int radius = floor(circle.radius);
+    int x = std::floor(circle.centre[0]);
+    int y = std::floor(circle.centre[1]);
+    int radius = std::floor(circle.radius);
 
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
@@ -38,4 +38,18 @@ void Renderer::SDLRenderer::circle(const Circle &circle, const Color &color)
             }
         }
     }
+};
+
+void Renderer::SDLRenderer::rect(const Rect &rect, const Color &color)
+{
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    SDL_Rect sdlRect{
+        x : static_cast<int>(rect.topLeft.x),
+        y : static_cast<int>(rect.topLeft.y),
+        w : static_cast<int>(rect.w),
+        h : static_cast<int>(rect.h)
+    };
+
+    SDL_RenderDrawRect(renderer, &sdlRect);
 };

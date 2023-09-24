@@ -16,6 +16,7 @@ namespace Renderer
         void present();
 
         void circle(const Circle &circle, const Color &color);
+        void rect(const Rect &rect, const Color &color);
 
     private:
         SDL_Renderer *renderer;

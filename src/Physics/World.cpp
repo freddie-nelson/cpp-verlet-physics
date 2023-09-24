@@ -2,6 +2,8 @@
 #include "../../include/Physics/Solvers/solvePosition.h"
 #include "../../include/Physics/Solvers/solveGravity.h"
 #include "../../include/Physics/Solvers/solveFriction.h"
+#include "../../include/Physics/Constraints/windowConstraint.h"
+#include "../../include/Physics/Collision/BroadPhase.h"
 #include "../../include/Physics/Collision/NarrowPhase.h"
 #include "../../include/Physics/Collision/Resolution.h"
 
@@ -9,13 +11,11 @@
 #include <iostream>
 #include <stdexcept>
 
-Physics::World::World(glm::vec2 gravity, glm::vec2 friction) : gravity(gravity), friction(friction)
+Physics::World::World(int windowWidth, int windowHeight, glm::vec2 gravity, float friction) : windowWidth(windowWidth), windowHeight(windowHeight), gravity(gravity), friction(friction)
 {
-    if (friction.x < 0 || friction.x > 1 || friction.y < 0 || friction.y > 1)
-        throw std::invalid_argument("Friction must be between 0 and 1");
 }
 
-void Physics::World::step(float dt)
+void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
 {
     // run solvers
     for (auto o : objects)
@@ -32,7 +32,7 @@ void Physics::World::step(float dt)
             solveGravity(p, gravity, dt);
 
             // apply friction
-            solveFriction(p, friction, dt);
+            // solveFriction(p, friction, dt);
 
             // update acceleration
             p->setAcceleration(p->getNewAcceleration());
@@ -41,21 +41,25 @@ void Physics::World::step(float dt)
     }
 
     // solve constraints
-    int substeps = 8;
     float subDt = dt / substeps;
 
-    for (int i = 0; i < subDt; i++)
+    for (int i = 0; i < substeps; i++)
     {
+        // apply constraints
+        applyWindowConstraint(&objects, windowWidth, windowHeight);
+
         // run broad phase collision detection
-        // TODO
+        auto collisionPairs = broadPhase(objects, 200, renderer);
 
         // run narrow phase collision detection
-        auto manifolds = narrowPhase(objects);
+        auto manifolds = narrowPhase(collisionPairs);
+        // auto manifolds = narrowPhaseSlow(&objects);
 
         // run collision resolution
         resolveCollisions(manifolds);
 
-        // delete manifolds
+        // cleanup
+        cleanupCollisionPairs(collisionPairs);
         cleanupManifolds(manifolds);
     }
 
@@ -94,12 +98,12 @@ void Physics::World::setGravity(glm::vec2 g)
     gravity = g;
 }
 
-glm::vec2 Physics::World::getFriction()
+float Physics::World::getFriction()
 {
     return friction;
 }
 
-void Physics::World::setFriction(glm::vec2 f)
+void Physics::World::setFriction(float f)
 {
     friction = f;
 }

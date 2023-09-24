@@ -37,5 +37,5 @@ private:
     Physics::World *world;
 
     void update(float dt);
-    void render();
+    void render(bool clear = true);
 };

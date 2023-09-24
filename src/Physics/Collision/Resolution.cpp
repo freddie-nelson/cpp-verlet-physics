@@ -23,6 +23,7 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
 
         float restitutionCoeff = std::min(a->getRestitution(), b->getRestitution());
 
+        // halfed because we want to move each object half the depth
         auto moveVector = -normal * depth * 0.5f * (restitutionCoeff + 1.0f);
 
         pa->move(moveVector * massCoeffA);

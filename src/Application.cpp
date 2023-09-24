@@ -2,6 +2,7 @@
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Circle.h"
 
+#include <math.h>
 #include <random>
 #include <time.h>
 #include <iostream>
@@ -28,6 +29,30 @@ int Application::run()
 
     auto lastUpdateTime = SDL_GetTicks64() - desiredFrameTime;
 
+    for (int i = 0; i < 10 * desiredFps; i++)
+    {
+        update(1.0f / desiredFps);
+    }
+
+    // count balls on screen
+    int balls = 0;
+    float slop = 0.5f;
+
+    for (auto o : world->getObjects())
+    {
+        auto c = static_cast<Physics::Circle *>(o);
+
+        auto centre = c->getCentre();
+        auto radius = c->getRadius();
+
+        if (centre.x - radius + slop >= 0 && centre.x + radius - slop <= windowWidth && centre.y - radius + slop >= 0 && centre.y + radius - slop <= windowHeight)
+        {
+            balls++;
+        }
+    }
+
+    std::cout << "balls: " << balls << std::endl;
+
     while (state == ApplicationState::RUNNING)
     {
         // update timestep
@@ -48,8 +73,9 @@ int Application::run()
             }
         }
 
-        update(dt);
-        render();
+        renderer->clear();
+        // update(dt);
+        render(false);
 
         // wait until frame time is reached
         const auto frameEndTime = now + desiredFrameTime;
@@ -78,22 +104,20 @@ int Application::init()
     renderer = new Renderer::SDLRenderer(sdlRenderer);
 
     // init physics
-    world = new Physics::World(glm::vec2(0.0f, 0.0f));
+    world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f));
 
     // test objects
     srand(time(NULL));
 
-    float r = 20.0f;
+    float r = 10.0f;
     float x = 50.0f;
     float y = 100.0f;
+    int fMag = 5000;
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 300; i++)
     {
-        int fMag = 10000;
-        glm::vec2 f = glm::vec2(rand() % fMag - fMag / 2, rand() % fMag - fMag / 2);
-
-        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 1.0f);
-        c->applyForce(f, c->getCentre());
+        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 0.0f);
+        c->applyForce(glm::vec2(fMag, fMag) * float(int(x + y) % 7), c->getCentre());
 
         world->addObject(c);
 
@@ -110,7 +134,7 @@ int Application::init()
 
     // float r = 25;
     // float m1 = 10;
-    // float m2 = 20;
+    // float m2 = 10;
     // float restitution = 1.0f;
 
     // float force = 50000;
@@ -138,19 +162,22 @@ void Application::destroy()
 
 void Application::update(float dt)
 {
+    float physicsDt = std::min(dt, 0.02f);
 
     // update physics
+    int startPhysics = SDL_GetTicks64();
+    world->step(physicsDt, 8, renderer);
+    int endPhysics = SDL_GetTicks64();
 
-    // print dt
-    std::cout << "\rke: " << world->calculateKineticEnergy() << ", dt: " << dt << "                     ";
-
-    world->step(dt);
+    // print debug info
+    std::cout << "\rke: " << world->calculateKineticEnergy() << ", physics (ms): " << endPhysics - startPhysics << ", dt: " << dt << "                     ";
 }
 
-void Application::render()
+void Application::render(bool clear)
 {
     // clear last frame
-    renderer->clear();
+    if (clear)
+        renderer->clear();
 
     // add physics world to renderer
     const Renderer::Color color{r : 255, g : 255, b : 255, a : 255};

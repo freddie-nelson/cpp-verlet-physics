@@ -3,13 +3,51 @@
 #include <glm/glm.hpp>
 #include <stdexcept>
 
-std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<Object *> &objects)
+std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair *> *pairs)
 {
     std::vector<Manifold *> *manifolds = new std::vector<Manifold *>();
 
-    for (auto a : objects)
+    for (auto p : *pairs)
     {
-        for (auto b : objects)
+        auto [a, b] = *p;
+
+        if (a == b)
+            continue;
+
+        Manifold *m = nullptr;
+
+        if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::CircleObject)
+        {
+
+            m = circleCircle(static_cast<Circle *>(a), static_cast<Circle *>(b));
+        }
+        else
+        {
+            throw std::invalid_argument("Unsupported object type");
+        }
+
+        if (m == nullptr)
+            continue;
+
+        if (m->depth <= 0.0f)
+        {
+            delete m;
+            continue;
+        }
+
+        manifolds->push_back(m);
+    }
+
+    return manifolds;
+}
+
+std::vector<Physics::Manifold *> *Physics::narrowPhaseSlow(std::vector<Object *> *objects)
+{
+    std::vector<Manifold *> *manifolds = new std::vector<Manifold *>();
+
+    for (auto a : *objects)
+    {
+        for (auto b : *objects)
         {
             if (a == b)
                 continue;
@@ -57,10 +95,10 @@ Physics::Manifold *Physics::circleCircle(Circle *a, Circle *b)
 {
     glm::vec2 aToB = b->getCentre() - a->getCentre();
 
-    float distance = glm::length(aToB);
+    float distanceSqr = glm::dot(aToB, aToB);
     float maxDistance = a->getRadius() + b->getRadius();
 
-    if (distance > maxDistance)
+    if (distanceSqr > maxDistance * maxDistance)
         return nullptr;
 
     Manifold *m = new Manifold();
@@ -72,6 +110,8 @@ Physics::Manifold *Physics::circleCircle(Circle *a, Circle *b)
     m->pb = b->getPoints()[0];
 
     m->normal = glm::normalize(aToB);
+
+    float distance = glm::length(aToB);
     m->depth = maxDistance - distance;
 
     return m;

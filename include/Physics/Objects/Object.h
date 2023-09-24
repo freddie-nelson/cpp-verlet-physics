@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./Point.h"
+#include "./AABB.h"
 
 #include <glm/vec2.hpp>
 #include <string>
@@ -16,7 +17,7 @@ namespace Physics
     class Object
     {
     public:
-        Object(ObjectType type, std::vector<glm::vec2> &points, float mass = 1.0f, float restitution = 1.0f, glm::vec2 friction = glm::vec2(0.0f, 0.0f));
+        Object(ObjectType type, std::vector<glm::vec2> &points, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f);
 
         /**
          * Moves the object by the given vector.
@@ -39,8 +40,8 @@ namespace Physics
         float getRestitution();
         void setRestitution(float r);
 
-        glm::vec2 getFriction();
-        void setFriction(glm::vec2 f);
+        float getFriction();
+        void setFriction(float f);
 
         std::vector<Point *> &getPoints();
         void setPoints(std::vector<glm::vec2> &p);
@@ -49,14 +50,22 @@ namespace Physics
         void removePoint(glm::vec2 p);
         bool hasPoint(glm::vec2 p);
 
+        glm::vec2 getCentre();
+
+        virtual AABB getAABB() = 0;
+
         ObjectType getType();
+        int getId();
 
     private:
+        static int nextId;
+
         ObjectType type;
+        int id;
 
         float mass = 1.0f;
         float restitution = 1.0f;
-        glm::vec2 friction = glm::vec2(0.0f, 0.0f);
+        float friction = 0.0f;
 
         std::vector<Point *> points;
 
