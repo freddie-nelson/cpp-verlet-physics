@@ -53,6 +53,7 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
 
         // run narrow phase collision detection
         auto manifolds = narrowPhase(collisionPairs);
+        // auto manifolds = narrowPhaseSlow(&objects);
 
         // check for missing manifolds
         // this code proves that any difference between narrow + broad phase and narrow phase alone is solely due to the broad phase

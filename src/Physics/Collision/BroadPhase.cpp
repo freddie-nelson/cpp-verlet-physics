@@ -23,6 +23,9 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
     for (auto o : objects)
     {
         auto c = o->getCentre();
+        if (std::isnan(c.x) || std::isnan(c.y))
+            continue;
+
         if (c.x < minX)
             minX = c.x;
         if (c.x > maxX)
@@ -48,8 +51,8 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
         return collisionPairs;
 
     // Calculate the dimensions of the grid
-    float cellWidth = maxW * 1.5f;
-    float cellHeight = maxH * 1.5f;
+    float cellWidth = maxW * 1.2f;
+    float cellHeight = maxH * 1.2f;
 
     minX -= cellWidth;
     minY -= cellHeight;

@@ -30,7 +30,7 @@ int Application::run()
     auto lastUpdateTime = SDL_GetTicks64() - desiredFrameTime;
 
     // simulate 10 seconds of perfect step physics
-    // for (int i = 0; i < 10 * desiredFps; i++)
+    // for (int i = 0; i < 4 * desiredFps; i++)
     // {
     //     update(1.0f / desiredFps);
     // }
@@ -119,7 +119,7 @@ int Application::init()
 
     for (int i = 0; i < 300; i++)
     {
-        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 0.0f);
+        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 1.0f);
         c->applyForce(glm::vec2(fMag, fMag) * float(int(x + y) % 7), c->getCentre());
 
         world->addObject(c);
