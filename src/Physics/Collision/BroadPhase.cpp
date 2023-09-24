@@ -82,7 +82,12 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
     // std::cout << "cellWidth: " << cellWidth << std::endl;
     // std::cout << "cellHeight: " << cellHeight << std::endl;
 
-    std::vector<BroadPhaseCellData *> grid[gridSizeX][gridSizeY];
+    std::vector<BroadPhaseCellData *> **grid = new std::vector<BroadPhaseCellData *> *[gridSizeX];
+
+    for (int x = 0; x < gridSizeX; x++)
+    {
+        grid[x] = new std::vector<BroadPhaseCellData *>[gridSizeY];
+    }
 
     // populate the grid
     for (auto &d : cells)
@@ -151,12 +156,19 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
     }
 
     // draw debug grid
+    drawDebugGrid(grid, gridSizeX, gridSizeY, cellWidth, cellHeight, minX, minY, renderer);
+
+    return collisionPairs;
+}
+
+void Physics::drawDebugGrid(std::vector<BroadPhaseCellData *> **grid, int gridSizeX, int gridSizeY, float cellWidth, float cellHeight, float gridX, float gridY, Renderer::Renderer *renderer)
+{
     for (int x = 0; x < gridSizeX; x++)
     {
         for (int y = 0; y < gridSizeY; y++)
         {
-            int cellX = x * cellWidth + minX;
-            int cellY = y * cellHeight + minY;
+            int cellX = x * cellWidth + gridX;
+            int cellY = y * cellHeight + gridY;
             auto &cell = grid[x][y];
 
             const Renderer::Rect rect{
@@ -198,8 +210,6 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
             renderer->rect(rect, color);
         }
     }
-
-    return collisionPairs;
 }
 
 void Physics::cleanupCollisionPairs(std::vector<CollisionPair *> *collisionPairs)

@@ -16,6 +16,7 @@ namespace Physics
     };
 
     std::vector<CollisionPair *> *broadPhase(std::vector<Object *> &objects, int maxGridSize, Renderer::Renderer *renderer);
+    void drawDebugGrid(std::vector<BroadPhaseCellData *> **grid, int gridSizeX, int gridSizeY, float cellWidth, float cellHeight, float gridX, float gridY, Renderer::Renderer *renderer);
 
     void cleanupCollisionPairs(std::vector<CollisionPair *> *collisionPairs);
 }
