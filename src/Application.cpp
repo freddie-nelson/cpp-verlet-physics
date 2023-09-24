@@ -107,7 +107,7 @@ int Application::init()
     renderer = new Renderer::SDLRenderer(sdlRenderer);
 
     // init physics
-    world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f));
+    world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.0f, 0.1f);
 
     // test objects
     srand(time(NULL));
@@ -119,7 +119,7 @@ int Application::init()
 
     for (int i = 0; i < 300; i++)
     {
-        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 1.0f);
+        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 0.0f);
         c->applyForce(glm::vec2(fMag, fMag) * float(int(x + y) % 7), c->getCentre());
 
         world->addObject(c);

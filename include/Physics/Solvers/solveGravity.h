@@ -4,5 +4,5 @@
 
 namespace Physics
 {
-    void solveGravity(Physics::Point *o, glm::vec2 gravity, float dt);
+    void solveGravity(Physics::Point *p, glm::vec2 gravity, float dt);
 }

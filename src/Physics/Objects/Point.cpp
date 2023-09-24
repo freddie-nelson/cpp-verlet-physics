@@ -2,19 +2,15 @@
 
 #include <stdexcept>
 
-Physics::Point::Point(glm::vec2 position, float mass, float restitution, float friction)
+Physics::Point::Point(glm::vec2 position, float mass, float restitution, float friction, float drag)
 {
-    if (mass <= 0)
-        throw std::invalid_argument("Mass must be greater than or equal to 0.");
-    if (restitution < 0 || restitution > 1)
-        throw std::invalid_argument("Restitution must be between 0 and 1.");
-
     this->position = position;
     this->oldPosition = position;
 
-    this->mass = mass;
-    this->restitution = restitution;
-    this->friction = friction;
+    setMass(mass);
+    setRestitution(restitution);
+    setFriction(friction);
+    setDrag(drag);
 }
 
 void Physics::Point::move(glm::vec2 move)
@@ -34,6 +30,9 @@ float Physics::Point::getMass()
 
 void Physics::Point::setMass(float m)
 {
+    if (m <= 0)
+        throw std::invalid_argument("Mass must be greater than or equal to 0.");
+
     mass = m;
 }
 
@@ -52,6 +51,9 @@ float Physics::Point::getRestitution()
 
 void Physics::Point::setRestitution(float r)
 {
+    if (r < 0 || r > 1)
+        throw std::invalid_argument("Restitution must be between 0 and 1.");
+
     restitution = r;
 }
 
@@ -62,7 +64,23 @@ float Physics::Point::getFriction()
 
 void Physics::Point::setFriction(float f)
 {
+    if (f < 0 || f > 1)
+        throw std::invalid_argument("Friction must be between 0 and 1.");
+
     friction = f;
+}
+
+float Physics::Point::getDrag()
+{
+    return drag;
+}
+
+void Physics::Point::setDrag(float d)
+{
+    if (d < 0)
+        throw std::invalid_argument("Drag must be greater than or equal to 0.");
+
+    drag = d;
 }
 
 glm::vec2 &Physics::Point::getPosition()

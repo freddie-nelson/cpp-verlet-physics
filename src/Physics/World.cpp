@@ -2,6 +2,7 @@
 #include "../../include/Physics/Solvers/solvePosition.h"
 #include "../../include/Physics/Solvers/solveGravity.h"
 #include "../../include/Physics/Solvers/solveFriction.h"
+#include "../../include/Physics/Solvers/solveDrag.h"
 #include "../../include/Physics/Constraints/windowConstraint.h"
 #include "../../include/Physics/Collision/BroadPhase.h"
 #include "../../include/Physics/Collision/NarrowPhase.h"
@@ -11,8 +12,14 @@
 #include <iostream>
 #include <stdexcept>
 
-Physics::World::World(int windowWidth, int windowHeight, glm::vec2 gravity, float friction) : windowWidth(windowWidth), windowHeight(windowHeight), gravity(gravity), friction(friction)
+Physics::World::World(int windowWidth, int windowHeight, glm::vec2 gravity, float friction, float drag) : windowWidth(windowWidth), windowHeight(windowHeight)
 {
+    if (windowWidth <= 0 || windowHeight <= 0)
+        throw std::invalid_argument("Window dimensions must be greater than 0");
+
+    setGravity(gravity);
+    setFriction(friction);
+    setDrag(drag);
 }
 
 void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
@@ -33,6 +40,9 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
 
             // apply friction
             // solveFriction(p, friction, dt);
+
+            // apply drag
+            solveDrag(p, drag, dt);
 
             // update acceleration
             p->setAcceleration(p->getNewAcceleration());
@@ -133,7 +143,23 @@ float Physics::World::getFriction()
 
 void Physics::World::setFriction(float f)
 {
+    if (f < 0 || f > 1)
+        throw std::invalid_argument("Friction must be between 0 and 1.");
+
     friction = f;
+}
+
+float Physics::World::getDrag()
+{
+    return drag;
+}
+
+void Physics::World::setDrag(float d)
+{
+    if (d < 0)
+        throw std::invalid_argument("Drag must be greater than or equal to 0.");
+
+    drag = d;
 }
 
 std::vector<Physics::Object *> &Physics::World::getObjects()

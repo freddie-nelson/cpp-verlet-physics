@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-Physics::Circle::Circle(glm::vec2 centre, float radius, float mass, float restitution, float friction) : Object(ObjectType::CircleObject, *(new std::vector<glm::vec2>{centre}), mass, restitution, friction)
+Physics::Circle::Circle(glm::vec2 centre, float radius, float mass, float restitution, float friction, float drag) : Object(ObjectType::CircleObject, *(new std::vector<glm::vec2>{centre}), mass, restitution, friction, drag)
 {
     setRadius(radius);
 }

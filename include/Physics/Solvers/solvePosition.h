@@ -2,5 +2,5 @@
 
 namespace Physics
 {
-    void solvePosition(Physics::Point *o, float dt);
+    void solvePosition(Physics::Point *p, float dt);
 }

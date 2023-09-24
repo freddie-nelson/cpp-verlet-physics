@@ -4,12 +4,13 @@
 
 int Physics::Object::nextId = 0;
 
-Physics::Object::Object(ObjectType type, std::vector<glm::vec2> &points, float mass, float restitution, float friction) : type(type)
+Physics::Object::Object(ObjectType type, std::vector<glm::vec2> &points, float mass, float restitution, float friction, float drag) : type(type)
 {
     setPoints(points);
     setMass(mass);
     setRestitution(restitution);
     setFriction(friction);
+    setDrag(drag);
 
     id = nextId++;
 }
@@ -38,12 +39,12 @@ float Physics::Object::getMass()
 
 void Physics::Object::setMass(float m)
 {
-    mass = m;
-
     for (auto p : points)
     {
-        p->setMass(m);
+        p->setMass(m / points.size());
     }
+
+    mass = m;
 }
 
 float Physics::Object::getInvMass()
@@ -61,12 +62,12 @@ float Physics::Object::getRestitution()
 
 void Physics::Object::setRestitution(float r)
 {
-    restitution = r;
-
     for (auto p : points)
     {
         p->setRestitution(r);
     }
+
+    restitution = r;
 }
 
 float Physics::Object::getFriction()
@@ -76,12 +77,27 @@ float Physics::Object::getFriction()
 
 void Physics::Object::setFriction(float f)
 {
-    friction = f;
-
     for (auto p : points)
     {
         p->setFriction(f);
     }
+
+    friction = f;
+}
+
+float Physics::Object::getDrag()
+{
+    return drag;
+}
+
+void Physics::Object::setDrag(float d)
+{
+    for (auto p : points)
+    {
+        p->setDrag(d);
+    }
+
+    drag = d;
 }
 
 std::vector<Physics::Point *> &Physics::Object::getPoints()

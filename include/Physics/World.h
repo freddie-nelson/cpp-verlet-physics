@@ -16,7 +16,7 @@ namespace Physics
          * @param gravity The gravity force to apply to all objects in the world
          * @param friction The friction force to apply to all objects in the world
          */
-        World(int windowWidth, int windowHeight, glm::vec2 gravity = glm::vec2(0.0f, 0.0f), float friction = 0.0f);
+        World(int windowWidth, int windowHeight, glm::vec2 gravity = glm::vec2(0.0f, 0.0f), float friction = 0.0f, float drag = 0.0f);
 
         void step(float dt, int substeps, Renderer::Renderer *renderer);
 
@@ -28,6 +28,9 @@ namespace Physics
         float getFriction();
         void setFriction(float f);
 
+        float getDrag();
+        void setDrag(float d);
+
         std::vector<Object *> &getObjects();
         void addObject(Object *o);
         bool removeObject(const Object *o);
@@ -38,6 +41,7 @@ namespace Physics
 
         glm::vec2 gravity;
         float friction;
+        float drag;
 
         std::vector<Object *> objects;
     };

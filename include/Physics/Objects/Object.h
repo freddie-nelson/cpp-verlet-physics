@@ -17,7 +17,7 @@ namespace Physics
     class Object
     {
     public:
-        Object(ObjectType type, std::vector<glm::vec2> &points, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f);
+        Object(ObjectType type, std::vector<glm::vec2> &points, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f, float drag = 0.0f);
 
         /**
          * Moves the object by the given vector.
@@ -43,6 +43,9 @@ namespace Physics
         float getFriction();
         void setFriction(float f);
 
+        float getDrag();
+        void setDrag(float d);
+
         std::vector<Point *> &getPoints();
         void setPoints(std::vector<glm::vec2> &p);
 
@@ -66,6 +69,7 @@ namespace Physics
         float mass = 1.0f;
         float restitution = 1.0f;
         float friction = 0.0f;
+        float drag = 0.0f;
 
         std::vector<Point *> points;
 

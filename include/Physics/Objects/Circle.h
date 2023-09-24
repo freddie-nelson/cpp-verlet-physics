@@ -7,7 +7,7 @@ namespace Physics
     class Circle : public Object
     {
     public:
-        Circle(glm::vec2 c, float r, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f);
+        Circle(glm::vec2 c, float r, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f, float drag = 0.0f);
 
         void setCentre(glm::vec2 c);
 

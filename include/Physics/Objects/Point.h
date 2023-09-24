@@ -9,7 +9,7 @@ namespace Physics
     class Point
     {
     public:
-        Point(glm::vec2 position, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f);
+        Point(glm::vec2 position, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f, float drag = 0.0f);
 
         /**
          * Changes the point's position by the given vector.
@@ -32,6 +32,9 @@ namespace Physics
         float getFriction();
         void setFriction(float f);
 
+        float getDrag();
+        void setDrag(float d);
+
         glm::vec2 &getPosition();
         void setPosition(glm::vec2 p);
 
@@ -50,6 +53,7 @@ namespace Physics
         float mass = 1.0f;
         float restitution = 1.0f;
         float friction = 0.0f;
+        float drag = 0.0f;
 
         glm::vec2 position;
         glm::vec2 oldPosition;
