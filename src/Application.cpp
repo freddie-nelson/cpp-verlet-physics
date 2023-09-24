@@ -29,29 +29,30 @@ int Application::run()
 
     auto lastUpdateTime = SDL_GetTicks64() - desiredFrameTime;
 
-    for (int i = 0; i < 10 * desiredFps; i++)
-    {
-        update(1.0f / desiredFps);
-    }
+    // simulate 10 seconds of perfect step physics
+    // for (int i = 0; i < 10 * desiredFps; i++)
+    // {
+    //     update(1.0f / desiredFps);
+    // }
 
-    // count balls on screen
-    int balls = 0;
-    float slop = 0.5f;
+    // // count balls on screen
+    // int balls = 0;
+    // float slop = 0.5f;
 
-    for (auto o : world->getObjects())
-    {
-        auto c = static_cast<Physics::Circle *>(o);
+    // for (auto o : world->getObjects())
+    // {
+    //     auto c = static_cast<Physics::Circle *>(o);
 
-        auto centre = c->getCentre();
-        auto radius = c->getRadius();
+    //     auto centre = c->getCentre();
+    //     auto radius = c->getRadius();
 
-        if (centre.x - radius + slop >= 0 && centre.x + radius - slop <= windowWidth && centre.y - radius + slop >= 0 && centre.y + radius - slop <= windowHeight)
-        {
-            balls++;
-        }
-    }
+    //     if (centre.x - radius + slop >= 0 && centre.x + radius - slop <= windowWidth && centre.y - radius + slop >= 0 && centre.y + radius - slop <= windowHeight)
+    //     {
+    //         balls++;
+    //     }
+    // }
 
-    std::cout << "balls: " << balls << std::endl;
+    // std::cout << "balls: " << balls << std::endl;
 
     while (state == ApplicationState::RUNNING)
     {
@@ -73,8 +74,10 @@ int Application::run()
             }
         }
 
+        // clear renderer first so that update functions can draw to the screen
         renderer->clear();
-        // update(dt);
+
+        update(dt);
         render(false);
 
         // wait until frame time is reached

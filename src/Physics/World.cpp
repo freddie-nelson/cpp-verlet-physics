@@ -53,7 +53,34 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
 
         // run narrow phase collision detection
         auto manifolds = narrowPhase(collisionPairs);
-        // auto manifolds = narrowPhaseSlow(&objects);
+
+        // check for missing manifolds
+        // this code proves that any difference between narrow + broad phase and narrow phase alone is solely due to the broad phase
+        // collecting manifolds in a different order than the slow method
+
+        // auto manifoldsSlow = narrowPhaseSlow(&objects);
+        // std::vector<Manifold *> reordered;
+
+        // for (auto ms : *manifoldsSlow)
+        // {
+        //     bool found = false;
+
+        //     for (auto m : *manifolds)
+        //     {
+        //         if (m->a->getId() == ms->a->getId() && m->b->getId() == ms->b->getId())
+        //         {
+        //             found = true;
+        //             reordered.push_back(m);
+        //             break;
+        //         }
+        //     }
+
+        //     // if working then the following should never be printed
+        //     if (!found)
+        //     {
+        //         std::cout << "Manifold not found" << std::endl;
+        //     }
+        // }
 
         // run collision resolution
         resolveCollisions(manifolds);
