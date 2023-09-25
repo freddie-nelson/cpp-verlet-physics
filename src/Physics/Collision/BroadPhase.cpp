@@ -22,20 +22,21 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
 
     for (auto o : objects)
     {
+        auto aabb = o->getAABB();
         auto c = o->getCentre();
+
         if (std::isnan(c.x) || std::isnan(c.y))
             continue;
 
-        if (c.x < minX)
-            minX = c.x;
-        if (c.x > maxX)
-            maxX = c.x;
-        if (c.y < minY)
-            minY = c.y;
-        if (c.y > maxY)
-            maxY = c.y;
+        if (aabb.min.x < minX)
+            minX = aabb.min.x;
+        if (aabb.max.x > maxX)
+            maxX = aabb.max.x;
+        if (aabb.min.y < minY)
+            minY = aabb.min.y;
+        if (aabb.max.y > maxY)
+            maxY = aabb.max.y;
 
-        auto aabb = o->getAABB();
         float w = aabb.max.x - aabb.min.x;
         float h = aabb.max.y - aabb.min.y;
 
@@ -51,8 +52,9 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
         return collisionPairs;
 
     // Calculate the dimensions of the grid
-    float cellWidth = maxW * 1.2f;
-    float cellHeight = maxH * 1.2f;
+    float cellSizeFactor = 1.0f;
+    float cellWidth = maxW * cellSizeFactor;
+    float cellHeight = maxH * cellSizeFactor;
 
     minX -= cellWidth;
     minY -= cellHeight;
@@ -77,7 +79,7 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
     // std::cout << "minY: " << minY << std::endl;
     // std::cout << "maxX: " << maxX << std::endl;
     // std::cout << "maxY: " << maxY << std::endl;
-    // std::cout << "maxW: " << maxW << std::endl;
+    // std::cout << "maxW: " << maxW << std::endl
     // std::cout << "maxH: " << maxH << std::endl;
     // std::cout << "width: " << width << std::endl;
     // std::cout << "height: " << height << std::endl;

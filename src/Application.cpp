@@ -173,7 +173,7 @@ void Application::update(float dt)
     int endPhysics = SDL_GetTicks64();
 
     // print debug info
-    std::cout << "\rke: " << world->calculateKineticEnergy() << ", physics (ms): " << endPhysics - startPhysics << ", dt: " << dt << "                     ";
+    std::cout << "\rke: " << world->calculateKineticEnergy() << ", physics (ms): " << endPhysics - startPhysics << ", physics dt: " << physicsDt << ", dt: " << dt << "                     ";
 }
 
 void Application::render(bool clear)
