@@ -1,6 +1,7 @@
 #include "../include/Application.h"
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Circle.h"
+#include "../include/Physics/Objects/Rect.h"
 
 #include <math.h>
 #include <random>
@@ -109,32 +110,29 @@ int Application::init()
     // init physics
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.0f, 0.1f);
 
-    // test objects
-    srand(time(NULL));
+    // lots of circles
+    // float r = 10.0f;
+    // float x = 50.0f;
+    // float y = 100.0f;
+    // int fMag = 5000;
 
-    float r = 10.0f;
-    float x = 50.0f;
-    float y = 100.0f;
-    int fMag = 5000;
+    // for (int i = 0; i < 300; i++)
+    // {
+    //     auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 0.0f);
+    //     c->applyForce(glm::vec2(fMag, fMag) * float(int(x + y) % 7), c->getCentre());
 
-    for (int i = 0; i < 300; i++)
-    {
-        auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 0.0f);
-        c->applyForce(glm::vec2(fMag, fMag) * float(int(x + y) % 7), c->getCentre());
+    //     world->addObject(c);
 
-        world->addObject(c);
+    //     // update x and y
+    //     x += r * 3;
+    //     if (x + r > windowWidth - 50)
+    //     {
+    //         x = 50.0f;
+    //         y += r * 3;
+    //     }
+    // }
 
-        // update x and y
-        x += r * 3;
-        if (x + r > windowWidth - 50)
-        {
-            x = 50.0f;
-            y += r * 3;
-        }
-    }
-
-    std::cout << "starting ke: " << world->calculateKineticEnergy() << std::endl;
-
+    // 2 circles
     // float r = 25;
     // float m1 = 10;
     // float m2 = 10;
@@ -150,6 +148,24 @@ int Application::init()
 
     // world->addObject(c1);
     // world->addObject(c2);
+
+    // 2 rectangles
+    float w = 50;
+    float h = 50;
+    float m1 = 10;
+    float m2 = 10;
+    float restitution = 1.0f;
+
+    float force = 50000;
+
+    auto r1 = new Physics::Rect(glm::vec2(50, windowHeight / 2.0f), w, h, m1, restitution);
+    auto r2 = new Physics::Rect(glm::vec2(windowWidth - 50, windowHeight / 2.0f), w, h, m2, restitution);
+
+    r1->applyForce(glm::vec2(force, 0), r1->getCentre());
+    r2->applyForce(glm::vec2(-force * (m2 / m1), 0), r2->getCentre());
+
+    world->addObject(r1);
+    world->addObject(r2);
 
     return 0;
 }
@@ -197,6 +213,18 @@ void Application::render(bool clear)
             };
 
             renderer->circle(circle, color);
+        }
+        else if (o->getType() == Physics::ObjectType::PolygonObject)
+        {
+            auto points = o->getPoints();
+
+            auto pVecs = std::vector<glm::vec2>{};
+            for (auto p : points)
+            {
+                pVecs.push_back(p->getPosition());
+            }
+
+            renderer->polygon(pVecs, color);
         }
     }
 

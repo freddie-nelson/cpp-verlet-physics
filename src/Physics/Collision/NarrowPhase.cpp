@@ -18,8 +18,20 @@ std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair
 
         if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::CircleObject)
         {
-
+            // circle vs circle
             m = circleCircle(static_cast<Circle *>(a), static_cast<Circle *>(b));
+        }
+        else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::CircleObject)
+        {
+            // circle vs polygon
+        }
+        else if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::PolygonObject)
+        {
+            // circle vs polygon
+        }
+        else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::PolygonObject)
+        {
+            // polygon vs polygon
         }
         else
         {

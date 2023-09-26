@@ -53,3 +53,15 @@ void Renderer::SDLRenderer::rect(const Rect &rect, const Color &color)
 
     SDL_RenderDrawRect(renderer, &sdlRect);
 };
+
+void Renderer::SDLRenderer::polygon(const std::vector<glm::vec2> &vertices, const Color &color)
+{
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    for (int i = 0; i < vertices.size(); i++)
+    {
+        int j = (i + 1) % vertices.size();
+
+        SDL_RenderDrawLine(renderer, vertices[i].x, vertices[i].y, vertices[j].x, vertices[j].y);
+    }
+};

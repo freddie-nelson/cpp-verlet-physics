@@ -6,7 +6,15 @@ namespace Physics
     class Edge
     {
     public:
-        Edge(Point *p1, Point *p2, float length = -1.0f, float stiffness = 1.0f);
+        /**
+         * Creates a new edge between two points.
+         *
+         * @param p1 The first point.
+         * @param p2 The second point.
+         * @param stiffness The stiffness of the edge (0 flexible, 1 stiff)
+         * @param length The length of the edge (set to -1.0f to calculate automatically)
+         */
+        Edge(Point *p1, Point *p2, float stiffness = 1.0f, float length = -1.0f);
 
         Point *getP1();
         void setP1(Point *p);

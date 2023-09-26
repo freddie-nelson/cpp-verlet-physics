@@ -4,6 +4,7 @@
 #include "../../include/Physics/Solvers/solveFriction.h"
 #include "../../include/Physics/Solvers/solveDrag.h"
 #include "../../include/Physics/Constraints/windowConstraint.h"
+#include "../../include/Physics/Constraints/edgeConstraint.h"
 #include "../../include/Physics/Collision/BroadPhase.h"
 #include "../../include/Physics/Collision/NarrowPhase.h"
 #include "../../include/Physics/Collision/Resolution.h"
@@ -57,6 +58,7 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
     {
         // apply constraints
         applyWindowConstraint(&objects, windowWidth, windowHeight);
+        applyEdgeConstraint(&objects);
 
         // run broad phase collision detection
         auto collisionPairs = broadPhase(objects, 200, renderer);

@@ -25,9 +25,20 @@ void Physics::Object::move(glm::vec2 move)
 
 void Physics::Object::applyForce(glm::vec2 force, glm::vec2 p)
 {
+    auto c = getCentre();
+    if (p == c)
+    {
+        for (auto point : points)
+        {
+            point->applyForce(force / static_cast<float>(points.size()));
+        }
+
+        return;
+    }
+
     auto point = getPoint(p);
     if (point == nullptr)
-        throw std::invalid_argument("Point is not on object");
+        throw std::invalid_argument("Point does not exist on object.");
 
     point->applyForce(force);
 }
@@ -132,7 +143,9 @@ void Physics::Object::removePoint(glm::vec2 p)
     {
         if (points[i]->getPosition() == p)
         {
+            delete points[i];
             points.erase(points.begin() + i);
+
             return;
         }
     }
@@ -152,6 +165,43 @@ Physics::Point *Physics::Object::getPoint(glm::vec2 p)
     }
 
     return nullptr;
+}
+
+std::vector<Physics::Edge *> &Physics::Object::getEdges()
+{
+    return edges;
+}
+
+void Physics::Object::setEdges(std::vector<Edge *> &edges)
+{
+    for (auto edge : this->edges)
+    {
+        delete edge;
+    }
+
+    this->edges.clear();
+
+    for (auto edge : edges)
+    {
+        addEdge(edge);
+    }
+}
+
+void Physics::Object::addEdge(Edge *e)
+{
+    edges.push_back(e);
+}
+
+void Physics::Object::removeEdge(Edge *e)
+{
+    for (int i = 0; i < edges.size(); i++)
+    {
+        if (edges[i] == e)
+        {
+            edges.erase(edges.begin() + i);
+            return;
+        }
+    }
 }
 
 glm::vec2 Physics::Object::getCentre()

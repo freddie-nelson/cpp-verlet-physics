@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <stdexcept>
 
-Physics::Edge::Edge(Point *p1, Point *p2, float length, float stiffness)
+Physics::Edge::Edge(Point *p1, Point *p2, float stiffness, float length)
 {
     this->p1 = p1;
     this->p2 = p2;
