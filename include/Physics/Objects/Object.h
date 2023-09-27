@@ -71,7 +71,7 @@ namespace Physics
 
         glm::vec2 getCentre();
 
-        virtual AABB getAABB() = 0;
+        virtual AABB getAABB();
 
         ObjectType getType();
         int getId();

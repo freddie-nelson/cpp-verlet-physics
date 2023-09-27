@@ -67,6 +67,8 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
         auto manifolds = narrowPhase(collisionPairs);
         // auto manifolds = narrowPhaseSlow(&objects);
 
+        drawDebugManifolds(manifolds, renderer);
+
         // check for missing manifolds
         // this code proves that any difference between narrow + broad phase and narrow phase alone is solely due to the broad phase
         // collecting manifolds in a different order than the slow method
@@ -186,4 +188,13 @@ bool Physics::World::removeObject(const Physics::Object *o)
     }
 
     return false;
+}
+
+void Physics::World::drawDebugManifolds(std::vector<Manifold *> *manifolds, Renderer::Renderer *renderer)
+{
+    for (auto m : *manifolds)
+    {
+        auto start = m->a->getCentre();
+        renderer->line(start, start + m->normal * m->depth, Renderer::Color{0, 0, 255, 255});
+    }
 }

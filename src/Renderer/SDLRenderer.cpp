@@ -17,6 +17,12 @@ void Renderer::SDLRenderer::present()
     SDL_RenderPresent(renderer);
 }
 
+void Renderer::SDLRenderer::line(glm::vec2 start, glm::vec2 end, const Color &color)
+{
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderDrawLine(renderer, start.x, start.y, end.x, end.y);
+}
+
 void Renderer::SDLRenderer::circle(const Circle &circle, const Color &color)
 {
     int x = std::floor(circle.centre[0]);

@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include <stdexcept>
+#include <iostream>
 
 std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair *> *pairs)
 {
@@ -32,6 +33,7 @@ std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair
         else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::PolygonObject)
         {
             // polygon vs polygon
+            m = sat(a, b);
         }
         else
         {
@@ -53,44 +55,44 @@ std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair
     return manifolds;
 }
 
-std::vector<Physics::Manifold *> *Physics::narrowPhaseSlow(std::vector<Object *> *objects)
-{
-    std::vector<Manifold *> *manifolds = new std::vector<Manifold *>();
+// std::vector<Physics::Manifold *> *Physics::narrowPhaseSlow(std::vector<Object *> *objects)
+// {
+//     std::vector<Manifold *> *manifolds = new std::vector<Manifold *>();
 
-    for (auto a : *objects)
-    {
-        for (auto b : *objects)
-        {
-            if (a == b)
-                continue;
+//     for (auto a : *objects)
+//     {
+//         for (auto b : *objects)
+//         {
+//             if (a == b)
+//                 continue;
 
-            Manifold *m = nullptr;
+//             Manifold *m = nullptr;
 
-            if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::CircleObject)
-            {
+//             if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::CircleObject)
+//             {
 
-                m = circleCircle(static_cast<Circle *>(a), static_cast<Circle *>(b));
-            }
-            else
-            {
-                throw std::invalid_argument("Unsupported object type");
-            }
+//                 m = circleCircle(static_cast<Circle *>(a), static_cast<Circle *>(b));
+//             }
+//             else
+//             {
+//                 throw std::invalid_argument("Unsupported object type");
+//             }
 
-            if (m == nullptr)
-                continue;
+//             if (m == nullptr)
+//                 continue;
 
-            if (m->depth <= 0.0f)
-            {
-                delete m;
-                continue;
-            }
+//             if (m->depth <= 0.0f)
+//             {
+//                 delete m;
+//                 continue;
+//             }
 
-            manifolds->push_back(m);
-        }
-    }
+//             manifolds->push_back(m);
+//         }
+//     }
 
-    return manifolds;
-}
+//     return manifolds;
+// }
 
 void Physics::cleanupManifolds(std::vector<Manifold *> *manifolds)
 {
@@ -121,10 +123,135 @@ Physics::Manifold *Physics::circleCircle(Circle *a, Circle *b)
     m->pa = a->getPoints()[0];
     m->pb = b->getPoints()[0];
 
-    m->normal = glm::normalize(aToB);
+    m->normal = glm::normalize(-aToB);
 
     float distance = glm::length(aToB);
     m->depth = maxDistance - distance;
 
     return m;
+}
+
+Physics::Manifold *Physics::sat(Object *a, Object *b)
+{
+    if (a->getType() != ObjectType::PolygonObject || b->getType() != ObjectType::PolygonObject)
+        throw std::invalid_argument("Objects must be polygons for SAT.");
+
+    // get all edges
+    std::vector<EdgeData> edges;
+    for (auto e : a->getEdges())
+    {
+        edges.push_back({e, a});
+    }
+    for (auto e : b->getEdges())
+    {
+        edges.push_back({e, b});
+    }
+
+    // min distance will be used as depth in manifold
+    float minDistance = FLT_MAX;
+    Edge *edge = nullptr;
+    Object *edgeParent = nullptr;
+
+    for (auto ed : edges)
+    {
+        auto [e, parent] = ed;
+
+        glm::vec2 axis = e->getNormal();
+
+        // project all points onto axis
+        float minA, maxA, minB, maxB;
+
+        projectPointsToAxis(a, axis, minA, maxA);
+        projectPointsToAxis(b, axis, minB, maxB);
+
+        float distance = getIntervalDistance(minA, maxA, minB, maxB);
+
+        // no collision
+        if (distance > 0.0f)
+            return nullptr;
+
+        // keep track of minimum distance and store collision info for later
+        else if (std::abs(distance) < std::abs(minDistance))
+        {
+            edge = e;
+            edgeParent = parent;
+            minDistance = std::abs(distance);
+        }
+    }
+
+    // collision found
+    Manifold *m = new Manifold();
+
+    // make sure edge is on b and point is on a
+    if (edgeParent != b)
+    {
+        auto temp = a;
+        a = b;
+        b = temp;
+    }
+
+    // fill manifold
+    m->a = a;
+    m->b = b;
+    m->edge = edge;
+
+    m->depth = minDistance;
+    m->normal = edge->getNormal();
+
+    // get point on a involved in collision (m->pa)
+
+    // make sure collision normal is pointing at a
+    auto bToA = a->getCentre() - b->getCentre();
+    int sign = glm::dot(m->normal, bToA) > 0 ? 1 : -1;
+
+    // normal is pointing away from a so flip it
+    // to point normal from b to a
+    if (sign != 1)
+    {
+        m->normal *= -1;
+    }
+
+    // find closest point in a to b's centre in the direction of the normal
+    float closestDistance = FLT_MAX;
+
+    for (auto p : a->getPoints())
+    {
+        auto bToP = p->getPosition() - b->getCentre();
+        float dist = glm::dot(m->normal, bToP);
+
+        if (dist < closestDistance)
+        {
+            closestDistance = dist;
+            m->pa = p;
+        }
+    }
+
+    return m;
+}
+
+void Physics::projectPointsToAxis(Object *o, glm::vec2 &axis, float &min, float &max)
+{
+    min = FLT_MAX;
+    max = -FLT_MAX;
+
+    for (auto p : o->getPoints())
+    {
+        float dot = glm::dot(p->getPosition(), axis);
+        if (dot < min)
+            min = dot;
+        if (dot > max)
+            max = dot;
+    }
+}
+
+float Physics::getIntervalDistance(float minA, float maxA, float minB, float maxB)
+{
+    if (minA < minB)
+    {
+        return minB - maxA;
+    }
+    else
+    {
+        return minA - maxB;
+    }
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include "./Point.h"
 
 namespace Physics
@@ -15,6 +17,8 @@ namespace Physics
          * @param length The length of the edge (set to -1.0f to calculate automatically)
          */
         Edge(Point *p1, Point *p2, float stiffness = 1.0f, float length = -1.0f);
+
+        glm::vec2 getNormal(bool clockwise = true);
 
         Point *getP1();
         void setP1(Point *p);

@@ -2,6 +2,7 @@
 
 #include "./Objects/Object.h"
 #include "../Renderer/Renderer.h"
+#include "./Collision/Manifold.h"
 
 #include <vector>
 
@@ -34,6 +35,8 @@ namespace Physics
         std::vector<Object *> &getObjects();
         void addObject(Object *o);
         bool removeObject(const Object *o);
+
+        void drawDebugManifolds(std::vector<Manifold *> *manifolds, Renderer::Renderer *renderer);
 
     private:
         int windowWidth;

@@ -155,14 +155,17 @@ int Application::init()
     float m1 = 10;
     float m2 = 10;
     float restitution = 1.0f;
+    auto x = 200;
 
-    float force = 50000;
+    float force = 20000;
 
-    auto r1 = new Physics::Rect(glm::vec2(50, windowHeight / 2.0f), w, h, m1, restitution);
-    auto r2 = new Physics::Rect(glm::vec2(windowWidth - 50, windowHeight / 2.0f), w, h, m2, restitution);
+    auto r1 = new Physics::Rect(glm::vec2(x, windowHeight / 2.0f), w, h, m1, restitution);
+    auto r2 = new Physics::Rect(glm::vec2(windowWidth - x, windowHeight / 2.0f), w, h, m2, restitution);
 
     r1->applyForce(glm::vec2(force, 0), r1->getCentre());
     r2->applyForce(glm::vec2(-force * (m2 / m1), 0), r2->getCentre());
+
+    world->setGravity(glm::vec2(0.0f, 0.0f));
 
     world->addObject(r1);
     world->addObject(r2);
@@ -226,6 +229,15 @@ void Application::render(bool clear)
 
             renderer->polygon(pVecs, color);
         }
+
+        // draw aabb
+        auto aabb = o->getAABB();
+        const Renderer::Rect rect{
+            topLeft : glm::vec2(aabb.min.x, aabb.min.y),
+            w : aabb.max.x - aabb.min.x,
+            h : aabb.max.y - aabb.min.y
+        };
+        renderer->rect(rect, Renderer::Color{r : 0, g : 255, b : 0, a : 255});
     }
 
     // render

@@ -8,7 +8,7 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
 {
     for (auto m : *manifolds)
     {
-        auto [a, b, pa, pb, normal, depth] = *m;
+        auto [a, b, pa, pb, edge, normal, depth] = *m;
 
         // std::cout << "start collision resolution" << std::endl;
         // std::cout << "mass: " << a->getMass() << std::endl;
@@ -19,15 +19,11 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         float totalInvMass = invMassA + invMassB;
 
         float massCoeffA = invMassA / totalInvMass;
-        float massCoeffB = invMassB / totalInvMass;
-
         float restitutionCoeff = std::min(a->getRestitution(), b->getRestitution());
 
         // halfed because we want to move each object half the depth
-        auto moveVector = -normal * depth * 0.5f * (restitutionCoeff + 0.6f);
-
-        pa->move(moveVector * massCoeffA);
-        pb->move(-moveVector * massCoeffB);
+        auto moveVector = normal * depth * (restitutionCoeff + 0.6f) * massCoeffA;
+        pa->move(moveVector);
 
         // if (std::isnan(pa->getPosition().x))
         // {

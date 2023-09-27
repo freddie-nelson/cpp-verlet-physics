@@ -15,8 +15,6 @@ namespace Physics
         float getHeight();
         void setHeight(float h);
 
-        AABB getAABB();
-
     private:
         glm::vec2 centre;
         float width;

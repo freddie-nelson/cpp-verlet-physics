@@ -14,6 +14,7 @@ namespace Renderer
         virtual void clear() = 0;
         virtual void present() = 0;
 
+        virtual void line(glm::vec2 start, glm::vec2 end, const Color &color) = 0;
         virtual void circle(const Circle &circle, const Color &color) = 0;
         virtual void rect(const Rect &rect, const Color &color) = 0;
 

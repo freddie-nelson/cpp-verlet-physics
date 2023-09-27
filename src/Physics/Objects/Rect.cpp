@@ -70,26 +70,3 @@ void Physics::Rect::setHeight(float h)
 
     setCentre(centre);
 }
-
-Physics::AABB Physics::Rect::getAABB()
-{
-    auto points = getPoints();
-    glm::vec2 min = points[0]->getPosition();
-    glm::vec2 max = points[0]->getPosition();
-
-    for (auto p : points)
-    {
-        auto pos = p->getPosition();
-
-        if (pos.x < min.x)
-            min.x = pos.x;
-        if (pos.x > max.x)
-            max.x = pos.x;
-        if (pos.y < min.y)
-            min.y = pos.y;
-        if (pos.y > max.y)
-            max.y = pos.y;
-    }
-
-    return AABB{min : min, max : max};
-}

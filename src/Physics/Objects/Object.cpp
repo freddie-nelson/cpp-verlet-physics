@@ -129,11 +129,14 @@ void Physics::Object::setPoints(std::vector<glm::vec2> &p)
     {
         addPoint(point);
     }
+
+    // redistribute mass to points
+    setMass(mass);
 }
 
 void Physics::Object::addPoint(glm::vec2 p)
 {
-    Point *point = new Point(p, mass, restitution, friction);
+    Point *point = new Point(p, mass / points.size() + 1, restitution, friction);
     points.push_back(point);
 }
 
@@ -223,6 +226,31 @@ glm::vec2 Physics::Object::getCentre()
     centre /= points.size();
 
     return centre;
+}
+
+Physics::AABB Physics::Object::getAABB()
+{
+    auto points = getPoints();
+    auto initial = points[0]->getPosition();
+
+    glm::vec2 min = glm::vec2(initial.x, initial.y);
+    glm::vec2 max = glm::vec2(initial.x, initial.y);
+
+    for (auto p : points)
+    {
+        auto pos = p->getPosition();
+
+        if (pos.x < min.x)
+            min.x = pos.x;
+        if (pos.x > max.x)
+            max.x = pos.x;
+        if (pos.y < min.y)
+            min.y = pos.y;
+        if (pos.y > max.y)
+            max.y = pos.y;
+    }
+
+    return AABB{min : min, max : max};
 }
 
 Physics::ObjectType Physics::Object::getType()

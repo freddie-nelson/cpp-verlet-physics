@@ -12,6 +12,23 @@ Physics::Edge::Edge(Point *p1, Point *p2, float stiffness, float length)
     setStiffness(stiffness);
 }
 
+glm::vec2 Physics::Edge::getNormal(bool clockwise)
+{
+    auto p1Pos = p1->getPosition();
+    auto p2Pos = p2->getPosition();
+
+    if (clockwise)
+    {
+        // y, -x (clockwise) (perpendicular vector)
+        return glm::normalize(glm::vec2(p2Pos.y - p1Pos.y, p1Pos.x - p2Pos.x));
+    }
+    else
+    {
+        // -y, x (anticlockwise) (perpendicular vector)
+        return glm::normalize(glm::vec2(p1Pos.y - p2Pos.y, p2Pos.x - p1Pos.x));
+    }
+}
+
 Physics::Point *Physics::Edge::getP1()
 {
     return p1;
