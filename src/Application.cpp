@@ -110,65 +110,7 @@ int Application::init()
     // init physics
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.0f, 0.1f);
 
-    // lots of circles
-    // float r = 10.0f;
-    // float x = 50.0f;
-    // float y = 100.0f;
-    // int fMag = 5000;
-
-    // for (int i = 0; i < 300; i++)
-    // {
-    //     auto c = new Physics::Circle(glm::vec2(x, y), r, r * 0.1f, 0.0f);
-    //     c->applyForce(glm::vec2(fMag, fMag) * float(int(x + y) % 7), c->getCentre());
-
-    //     world->addObject(c);
-
-    //     // update x and y
-    //     x += r * 3;
-    //     if (x + r > windowWidth - 50)
-    //     {
-    //         x = 50.0f;
-    //         y += r * 3;
-    //     }
-    // }
-
-    // 2 circles
-    // float r = 25;
-    // float m1 = 10;
-    // float m2 = 10;
-    // float restitution = 1.0f;
-
-    // float force = 50000;
-
-    // auto c1 = new Physics::Circle(glm::vec2(50, windowHeight / 2.0f), r, m1, restitution);
-    // auto c2 = new Physics::Circle(glm::vec2(windowWidth - 50, windowHeight / 2.0f), r, m2, restitution);
-
-    // c1->applyForce(glm::vec2(force, 0), c1->getCentre());
-    // c2->applyForce(glm::vec2(-force * (m2 / m1), 0), c2->getCentre());
-
-    // world->addObject(c1);
-    // world->addObject(c2);
-
-    // 2 rectangles
-    float w = 50;
-    float h = 50;
-    float m1 = 10;
-    float m2 = 10;
-    float restitution = 1.0f;
-    auto x = 200;
-
-    float force = 20000;
-
-    auto r1 = new Physics::Rect(glm::vec2(x, windowHeight / 2.0f), w, h, m1, restitution);
-    auto r2 = new Physics::Rect(glm::vec2(windowWidth - x, windowHeight / 2.0f), w, h, m2, restitution);
-
-    r1->applyForce(glm::vec2(force, 0), r1->getCentre());
-    r2->applyForce(glm::vec2(-force * (m2 / m1), 0), r2->getCentre());
-
-    world->setGravity(glm::vec2(0.0f, 0.0f));
-
-    world->addObject(r1);
-    world->addObject(r2);
+    testObjectsGrid(100, Physics::ObjectType::PolygonObject, 40.0f);
 
     return 0;
 }
@@ -180,6 +122,65 @@ void Application::destroy()
     SDL_Quit();
 
     delete this;
+}
+
+void Application::testObjectsGrid(int count, Physics::ObjectType type, float size, float force, float restitution, float friction, float drag)
+{
+    int padding = 50;
+    int x = padding;
+    int y = padding;
+
+    for (int i = 0; i < count; i++)
+    {
+        Physics::Object *o;
+        if (type == Physics::ObjectType::CircleObject)
+        {
+            o = new Physics::Circle(glm::vec2(x, y), size, size * 0.1f, restitution, friction, drag);
+        }
+        else if (type == Physics::ObjectType::PolygonObject)
+        {
+            o = new Physics::Rect(glm::vec2(x, y), size, size, size * 0.1f, restitution, friction, drag);
+        }
+
+        o->applyForce(glm::vec2(force, force) * float(int(x + y) % 7), o->getCentre());
+
+        world->addObject(o);
+
+        // update x and y
+        x += size * 3;
+        if (x + size > windowWidth - padding)
+        {
+            x = padding;
+            y += size * 3;
+        }
+    }
+}
+
+void Application::testObjectsCollision(Physics::ObjectType type, float sizeA, float sizeB, float force, float restitution, float friction, float drag)
+{
+    float x = 150;
+    float mA = sizeA * 0.1f;
+    float mB = sizeB * 0.1f;
+
+    Physics::Object *a;
+    Physics::Object *b;
+
+    if (type == Physics::ObjectType::CircleObject)
+    {
+        a = new Physics::Circle(glm::vec2(x, windowHeight / 2.0f), sizeA, mA, restitution, friction, drag);
+        b = new Physics::Circle(glm::vec2(x, windowHeight / 2.0f), sizeB, mB, restitution, friction, drag);
+    }
+    else if (type == Physics::ObjectType::PolygonObject)
+    {
+        a = new Physics::Rect(glm::vec2(x, windowHeight / 2.0f), sizeA, sizeA, mA, restitution, friction, drag);
+        b = new Physics::Rect(glm::vec2(x, windowHeight / 2.0f), sizeB, sizeB, mB, restitution, friction, drag);
+    }
+
+    a->applyForce(glm::vec2(force, 0), a->getCentre());
+    b->applyForce(glm::vec2(-force * (mB / mA), 0), b->getCentre());
+
+    world->addObject(a);
+    world->addObject(b);
 }
 
 void Application::update(float dt)
@@ -237,7 +238,7 @@ void Application::render(bool clear)
             w : aabb.max.x - aabb.min.x,
             h : aabb.max.y - aabb.min.y
         };
-        renderer->rect(rect, Renderer::Color{r : 0, g : 255, b : 0, a : 255});
+        renderer->rect(rect, Renderer::Color{r : 0, g : 255, b : 0, a : 125});
     }
 
     // render
