@@ -188,12 +188,12 @@ void Physics::drawDebugGrid(std::vector<BroadPhaseCellData *> **grid, int gridSi
             {
                 color.g = 255;
 
-                std::cout << "x: " << x << ", y: " << y << ", size: " << cell.size() << std::endl;
-                for (auto d : cell)
-                {
-                    auto [o, aabb] = *d;
-                    std::cout << " id: " << o->getId() << "    x: " << o->getCentre().x << ", y: " << o->getCentre().y << std::endl;
-                }
+                // std::cout << "x: " << x << ", y: " << y << ", size: " << cell.size() << std::endl;
+                // for (auto d : cell)
+                // {
+                //     auto [o, aabb] = *d;
+                //     std::cout << " id: " << o->getId() << "    x: " << o->getCentre().x << ", y: " << o->getCentre().y << std::endl;
+                // }
             }
             else if (cell.size() > 5)
             {

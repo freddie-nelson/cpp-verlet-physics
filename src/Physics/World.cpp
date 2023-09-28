@@ -195,6 +195,19 @@ void Physics::World::drawDebugManifolds(std::vector<Manifold *> *manifolds, Rend
     for (auto m : *manifolds)
     {
         auto start = m->a->getCentre();
-        renderer->line(start, start + m->normal * m->depth, Renderer::Color{0, 0, 255, 255});
+
+        // calculate friction
+        glm::vec2 frictionDir = glm::vec2(-m->normal.y, m->normal.x);
+
+        if (glm::dot(frictionDir, m->pa->getVelocity()) > 0)
+        {
+            frictionDir = -frictionDir;
+        }
+
+        float friction = std::fmax(m->a->getFriction(), m->b->getFriction());
+        float frictionDirVelocity = glm::dot(frictionDir, m->pa->getVelocity());
+
+        renderer->line(start, start + m->normal * std::fmax(8.0f, m->depth), Renderer::Color{0, 0, 255, 255});
+        renderer->line(start, start + frictionDir * std::fmax(8.0f, frictionDirVelocity * friction), Renderer::Color{0, 255, 0, 255});
     }
 }

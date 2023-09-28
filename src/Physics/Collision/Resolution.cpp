@@ -60,6 +60,23 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         p1->setPosition(p1->getPosition() - moveVector * (1 - t) * p1MassCoeff * lambda);
         p2->setPosition(p2->getPosition() - moveVector * t * p2MassCoeff * lambda);
 
+        // apply friction
+        float friction = std::fmax(a->getFriction(), b->getFriction());
+
+        // get direction perpendicular to normal and in the opposite direction of the objects velocity
+        glm::vec2 frictionDir = glm::vec2(-normal.y, normal.x);
+
+        if (glm::dot(frictionDir, pa->getVelocity()) > 0)
+        {
+            frictionDir = -frictionDir;
+        }
+
+        // this should be negative
+        // as friction direction is in opposite direction to velocity
+        float frictionDirVelocity = glm::dot(frictionDir, pa->getVelocity());
+
+        pa->setPosition(pa->getPosition() - frictionDir * frictionDirVelocity * friction);
+
         // if (std::isnan(pa->getPosition().x))
         // {
         //     std::cout << "id: " << a->getId() << ", pa: " << pa->getPosition().x << ", " << pa->getPosition().y << std::endl;
