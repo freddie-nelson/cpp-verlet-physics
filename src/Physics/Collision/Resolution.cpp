@@ -19,11 +19,46 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         float totalInvMass = invMassA + invMassB;
 
         float massCoeffA = invMassA / totalInvMass;
-        float restitutionCoeff = std::min(a->getRestitution(), b->getRestitution());
+        float restitutionCoeff = std::min(a->getRestitution(), b->getRestitution()) + 0.6f;
 
         // halfed because we want to move each object half the depth
-        auto moveVector = normal * depth * (restitutionCoeff + 0.6f) * massCoeffA;
+        auto moveVector = normal * depth * restitutionCoeff * massCoeffA;
         pa->move(moveVector);
+
+        if (edge == nullptr)
+            return;
+
+        // edge resolution code
+
+        auto p1 = edge->getP1();
+        auto p2 = edge->getP2();
+
+        auto p1Pos = p1->getPosition();
+        auto p2Pos = p2->getPosition();
+        auto paPos = pa->getPosition();
+
+        // calculate coefficient for where collision vertex lies on collision edge
+        // collision code is from https://www.gamedev.net/tutorials/programming/math-and-physics/a-verlet-based-approach-for-2d-game-physics-r2714/#:~:text=Acceleration%20is%20change%20in%20velocity,change%20in%20the%20rotational%20velocity.
+        // check here for explanations
+
+        float t;
+        if (std::abs(p1Pos.x - p2Pos.x) > std::abs(p1Pos.y - p2Pos.y))
+        {
+            t = (paPos.x - moveVector.x - p1Pos.x) / (p2Pos.x - p1Pos.x);
+        }
+        else
+        {
+            t = (paPos.y - moveVector.y - p1Pos.y) / (p2Pos.y - p1Pos.y);
+        }
+
+        float lambda = 1.0f / (t * t + (1 - t) * (1 - t));
+
+        float edgeMass = p1->getMass() + p2->getMass();
+        float p1MassCoeff = p1->getMass() / edgeMass;
+        float p2MassCoeff = p2->getMass() / edgeMass;
+
+        p1->setPosition(p1->getPosition() - moveVector * (1 - t) * p1MassCoeff * lambda);
+        p2->setPosition(p2->getPosition() - moveVector * t * p2MassCoeff * lambda);
 
         // if (std::isnan(pa->getPosition().x))
         // {
