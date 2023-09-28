@@ -13,6 +13,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <stdexcept>
+#include <SDL2/SDL.h>
 
 Physics::World::World(int windowWidth, int windowHeight, glm::vec2 gravity, float drag) : windowWidth(windowWidth), windowHeight(windowHeight)
 {
@@ -54,6 +55,12 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
     // solve constraints
     float subDt = dt / substeps;
 
+    int startTime;
+    int broadPhaseTime = 0;
+    int narrowPhaseTime = 0;
+    int resolveTime = 0;
+    int cleanupTime = 0;
+
     for (int i = 0; i < substeps; i++)
     {
         // apply constraints
@@ -61,21 +68,31 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
         applyEdgeConstraint(&objects);
 
         // run broad phase collision detection
+        startTime = SDL_GetTicks64();
         auto collisionPairs = broadPhase(objects, 200, renderer);
+        broadPhaseTime += SDL_GetTicks64() - startTime;
 
         // run narrow phase collision detection
+        startTime = SDL_GetTicks64();
         auto manifolds = narrowPhase(collisionPairs);
+        narrowPhaseTime += SDL_GetTicks64() - startTime;
 
         if (Globals::DEBUG_MODE)
             drawDebugManifolds(manifolds, renderer);
 
         // run collision resolution
+        startTime = SDL_GetTicks64();
         resolveCollisions(manifolds);
+        resolveTime += SDL_GetTicks64() - startTime;
 
         // cleanup
+        startTime = SDL_GetTicks64();
         cleanupCollisionPairs(collisionPairs);
         cleanupManifolds(manifolds);
+        cleanupTime += SDL_GetTicks64() - startTime;
     }
+
+    std::cout << "\rbroadphase (ms): " << broadPhaseTime << ", narrowphase (ms): " << narrowPhaseTime << ", resolve (ms): " << resolveTime << ", cleanup (ms): " << cleanupTime << "               ";
 
     // auto o = objects[0]->getPoints()[0];
     // std::cout << std::endl

@@ -194,7 +194,7 @@ void Application::update(float dt)
     int endPhysics = SDL_GetTicks64();
 
     // print timestep info
-    std::cout << "\rke: " << 0 << ", physics (ms): " << endPhysics - startPhysics << ", physics dt: " << physicsDt << ", dt: " << dt << "                     ";
+    // std::cout << "\rke: " << 0 << ", physics (ms): " << endPhysics - startPhysics << ", physics dt: " << physicsDt << ", dt: " << dt << "                  ";
 }
 
 void Application::render(bool clear)
