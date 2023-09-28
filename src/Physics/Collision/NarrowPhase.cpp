@@ -162,6 +162,9 @@ Physics::Manifold *Physics::sat(Object *a, Object *b)
             parent = b;
         }
 
+        if (e->getIsBrace())
+            continue;
+
         glm::vec2 axis = e->getNormal();
 
         // project all points onto axis

@@ -36,8 +36,8 @@ void Physics::Rect::setCentre(glm::vec2 c)
         new Edge(points[3], points[0]),
 
         // brace
-        new Edge(points[0], points[2]),
-        new Edge(points[1], points[3])};
+        new Edge(points[0], points[2], true),
+        new Edge(points[1], points[3], true)};
 
     setEdges(edges);
 };

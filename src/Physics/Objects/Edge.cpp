@@ -3,11 +3,12 @@
 #include <glm/glm.hpp>
 #include <stdexcept>
 
-Physics::Edge::Edge(Point *p1, Point *p2, float stiffness, float length)
+Physics::Edge::Edge(Point *p1, Point *p2, bool isBrace, float stiffness, float length)
 {
     this->p1 = p1;
     this->p2 = p2;
 
+    this->isBrace = isBrace;
     setLength(length);
     setStiffness(stiffness);
 }
@@ -47,6 +48,11 @@ Physics::Point *Physics::Edge::getP2()
 void Physics::Edge::setP2(Point *p)
 {
     p2 = p;
+}
+
+bool Physics::Edge::getIsBrace()
+{
+    return isBrace;
 }
 
 float Physics::Edge::getLength()
