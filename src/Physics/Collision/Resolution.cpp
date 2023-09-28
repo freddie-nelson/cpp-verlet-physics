@@ -55,8 +55,8 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
             float p1MassCoeff = p1->getMass() / edgeMass;
             float p2MassCoeff = p2->getMass() / edgeMass;
 
-            p1->setPosition(p1->getPosition() - moveVector * (1 - t) * p1MassCoeff * lambda);
-            p2->setPosition(p2->getPosition() - moveVector * t * p2MassCoeff * lambda);
+            p1->setPosition(p1Pos - moveVector * (1 - t) * p1MassCoeff * lambda);
+            p2->setPosition(p2Pos - moveVector * t * p2MassCoeff * lambda);
         }
 
         // apply friction

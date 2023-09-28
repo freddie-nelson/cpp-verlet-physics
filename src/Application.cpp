@@ -111,7 +111,7 @@ int Application::init()
     // init physics
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.1f);
 
-    testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
+    testObjectsGrid(200, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.001f, 0.0f);
 
     return 0;
 }

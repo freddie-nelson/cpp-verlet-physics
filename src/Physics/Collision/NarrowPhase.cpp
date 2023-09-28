@@ -137,24 +137,30 @@ Physics::Manifold *Physics::sat(Object *a, Object *b)
         throw std::invalid_argument("Objects must be polygons for SAT.");
 
     // get all edges
-    std::vector<EdgeData> edges;
-    for (auto e : a->getEdges())
-    {
-        edges.push_back({e, a});
-    }
-    for (auto e : b->getEdges())
-    {
-        edges.push_back({e, b});
-    }
+    std::vector<Edge *> aEdges = a->getEdges();
+    std::vector<Edge *> bEdges = b->getEdges();
 
     // min distance will be used as depth in manifold
     float minDistance = FLT_MAX;
     Edge *edge = nullptr;
     Object *edgeParent = nullptr;
 
-    for (auto ed : edges)
+    // loop through all edges of a and b
+    for (int i = 0; i < aEdges.size() + bEdges.size(); i++)
     {
-        auto [e, parent] = ed;
+        Edge *e;
+        Object *parent;
+
+        if (i < aEdges.size())
+        {
+            e = aEdges[i];
+            parent = a;
+        }
+        else
+        {
+            e = bEdges[i - aEdges.size()];
+            parent = b;
+        }
 
         glm::vec2 axis = e->getNormal();
 
@@ -171,7 +177,7 @@ Physics::Manifold *Physics::sat(Object *a, Object *b)
             return nullptr;
 
         // keep track of minimum distance and store collision info for later
-        else if (std::abs(distance) < std::abs(minDistance))
+        else if (std::abs(distance) < minDistance)
         {
             edge = e;
             edgeParent = parent;
