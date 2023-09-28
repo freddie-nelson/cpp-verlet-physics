@@ -108,7 +108,7 @@ int Application::init()
     renderer = new Renderer::SDLRenderer(sdlRenderer);
 
     // init physics
-    world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.0f, 0.1f);
+    world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.1f);
 
     testObjectsGrid(100, Physics::ObjectType::PolygonObject, 40.0f, 25000, 1.0f, 0.5f, 0.0f);
 

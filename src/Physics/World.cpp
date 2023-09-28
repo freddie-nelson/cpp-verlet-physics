@@ -13,13 +13,12 @@
 #include <iostream>
 #include <stdexcept>
 
-Physics::World::World(int windowWidth, int windowHeight, glm::vec2 gravity, float friction, float drag) : windowWidth(windowWidth), windowHeight(windowHeight)
+Physics::World::World(int windowWidth, int windowHeight, glm::vec2 gravity, float drag) : windowWidth(windowWidth), windowHeight(windowHeight)
 {
     if (windowWidth <= 0 || windowHeight <= 0)
         throw std::invalid_argument("Window dimensions must be greater than 0");
 
     setGravity(gravity);
-    setFriction(friction);
     setDrag(drag);
 }
 
@@ -138,19 +137,6 @@ glm::vec2 Physics::World::getGravity()
 void Physics::World::setGravity(glm::vec2 g)
 {
     gravity = g;
-}
-
-float Physics::World::getFriction()
-{
-    return friction;
-}
-
-void Physics::World::setFriction(float f)
-{
-    if (f < 0 || f > 1)
-        throw std::invalid_argument("Friction must be between 0 and 1.");
-
-    friction = f;
 }
 
 float Physics::World::getDrag()
