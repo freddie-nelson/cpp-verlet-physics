@@ -32,8 +32,6 @@ namespace Physics
         void addObject(Object *o);
         bool removeObject(const Object *o);
 
-        void drawDebugManifolds(std::vector<Manifold *> *manifolds, Renderer::Renderer *renderer);
-
     private:
         int windowWidth;
         int windowHeight;
@@ -42,5 +40,8 @@ namespace Physics
         float drag;
 
         std::vector<Object *> objects;
+
+        void compareManifolds(std::vector<Manifold *> *a, std::vector<Manifold *> *b);
+        void drawDebugManifolds(std::vector<Manifold *> *manifolds, Renderer::Renderer *renderer);
     };
 }

@@ -1,5 +1,6 @@
 #include "../../../include/Physics/Collision/BroadPhase.h"
 #include "../../../include/Renderer/Color.h"
+#include "../../../include/Globals.h"
 
 #include <math.h>
 #include <iostream>
@@ -145,7 +146,11 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
                                 continue;
 
                             // check if the objects aabb's are colliding
-                            // TODO
+                            AABB a = o->getAABB();
+                            AABB b = no->getAABB();
+
+                            if (!aabbIntersects(&a, &b))
+                                continue;
 
                             // add collision pair to list
                             collisionPairs->push_back(new CollisionPair{o, no});
@@ -161,7 +166,8 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
     }
 
     // draw debug grid
-    drawDebugGrid(grid, gridSizeX, gridSizeY, cellWidth, cellHeight, minX, minY, renderer);
+    if (Globals::DEBUG_MODE)
+        drawDebugGrid(grid, gridSizeX, gridSizeY, cellWidth, cellHeight, minX, minY, renderer);
 
     return collisionPairs;
 }

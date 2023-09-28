@@ -8,6 +8,7 @@
 #include "../../include/Physics/Collision/BroadPhase.h"
 #include "../../include/Physics/Collision/NarrowPhase.h"
 #include "../../include/Physics/Collision/Resolution.h"
+#include "../../include/Globals.h"
 
 #include <glm/glm.hpp>
 #include <iostream>
@@ -64,37 +65,9 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
 
         // run narrow phase collision detection
         auto manifolds = narrowPhase(collisionPairs);
-        // auto manifolds = narrowPhaseSlow(&objects);
 
-        drawDebugManifolds(manifolds, renderer);
-
-        // check for missing manifolds
-        // this code proves that any difference between narrow + broad phase and narrow phase alone is solely due to the broad phase
-        // collecting manifolds in a different order than the slow method
-
-        // auto manifoldsSlow = narrowPhaseSlow(&objects);
-        // std::vector<Manifold *> reordered;
-
-        // for (auto ms : *manifoldsSlow)
-        // {
-        //     bool found = false;
-
-        //     for (auto m : *manifolds)
-        //     {
-        //         if (m->a->getId() == ms->a->getId() && m->b->getId() == ms->b->getId())
-        //         {
-        //             found = true;
-        //             reordered.push_back(m);
-        //             break;
-        //         }
-        //     }
-
-        //     // if working then the following should never be printed
-        //     if (!found)
-        //     {
-        //         std::cout << "Manifold not found" << std::endl;
-        //     }
-        // }
+        if (Globals::DEBUG_MODE)
+            drawDebugManifolds(manifolds, renderer);
 
         // run collision resolution
         resolveCollisions(manifolds);
@@ -174,6 +147,36 @@ bool Physics::World::removeObject(const Physics::Object *o)
     }
 
     return false;
+}
+
+void Physics::World::compareManifolds(std::vector<Manifold *> *a, std::vector<Manifold *> *b)
+{
+    // check for missing manifolds
+    // this code proves that any difference between narrow + broad phase and narrow phase alone is solely due to the broad phase
+    // collecting manifolds in a different order than the slow method
+
+    std::vector<Manifold *> reordered;
+
+    for (auto mb : *b)
+    {
+        bool found = false;
+
+        for (auto ma : *a)
+        {
+            if (ma->a->getId() == mb->a->getId() && ma->b->getId() == mb->b->getId())
+            {
+                found = true;
+                reordered.push_back(ma);
+                break;
+            }
+        }
+
+        // if working then the following should never be printed
+        if (!found)
+        {
+            std::cout << "Manifold not found" << std::endl;
+        }
+    }
 }
 
 void Physics::World::drawDebugManifolds(std::vector<Manifold *> *manifolds, Renderer::Renderer *renderer)

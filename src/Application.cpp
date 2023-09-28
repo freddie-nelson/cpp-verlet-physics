@@ -2,6 +2,7 @@
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Circle.h"
 #include "../include/Physics/Objects/Rect.h"
+#include "../include/Globals.h"
 
 #include <math.h>
 #include <random>
@@ -110,7 +111,7 @@ int Application::init()
     // init physics
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.1f);
 
-    testObjectsGrid(100, Physics::ObjectType::PolygonObject, 40.0f, 25000, 1.0f, 0.5f, 0.0f);
+    testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
 
     return 0;
 }
@@ -126,7 +127,7 @@ void Application::destroy()
 
 void Application::testObjectsGrid(int count, Physics::ObjectType type, float size, float force, float restitution, float friction, float drag)
 {
-    int padding = 50;
+    int padding = 40;
     int x = padding;
     int y = padding;
 
@@ -135,7 +136,7 @@ void Application::testObjectsGrid(int count, Physics::ObjectType type, float siz
         Physics::Object *o;
         if (type == Physics::ObjectType::CircleObject)
         {
-            o = new Physics::Circle(glm::vec2(x, y), size, size * 0.1f, restitution, friction, drag);
+            o = new Physics::Circle(glm::vec2(x, y), size / 2.0f, size * 0.1f, restitution, friction, drag);
         }
         else if (type == Physics::ObjectType::PolygonObject)
         {
@@ -147,11 +148,11 @@ void Application::testObjectsGrid(int count, Physics::ObjectType type, float siz
         world->addObject(o);
 
         // update x and y
-        x += size * 3;
+        x += size * 1.5f;
         if (x + size > windowWidth - padding)
         {
             x = padding;
-            y += size * 3;
+            y += size * 1.5f;
         }
     }
 }
@@ -192,8 +193,8 @@ void Application::update(float dt)
     world->step(physicsDt, 8, renderer);
     int endPhysics = SDL_GetTicks64();
 
-    // print debug info
-    std::cout << "\rke: " << world->calculateKineticEnergy() << ", physics (ms): " << endPhysics - startPhysics << ", physics dt: " << physicsDt << ", dt: " << dt << "                     ";
+    // print timestep info
+    std::cout << "\rke: " << 0 << ", physics (ms): " << endPhysics - startPhysics << ", physics dt: " << physicsDt << ", dt: " << dt << "                     ";
 }
 
 void Application::render(bool clear)
@@ -232,13 +233,16 @@ void Application::render(bool clear)
         }
 
         // draw aabb
-        auto aabb = o->getAABB();
-        const Renderer::Rect rect{
-            topLeft : glm::vec2(aabb.min.x, aabb.min.y),
-            w : aabb.max.x - aabb.min.x,
-            h : aabb.max.y - aabb.min.y
-        };
-        renderer->rect(rect, Renderer::Color{r : 0, g : 255, b : 0, a : 125});
+        if (Globals::DEBUG_MODE)
+        {
+            auto aabb = o->getAABB();
+            const Renderer::Rect rect{
+                topLeft : glm::vec2(aabb.min.x, aabb.min.y),
+                w : aabb.max.x - aabb.min.x,
+                h : aabb.max.y - aabb.min.y
+            };
+            renderer->rect(rect, Renderer::Color{r : 0, g : 255, b : 0, a : 125});
+        }
     }
 
     // render
