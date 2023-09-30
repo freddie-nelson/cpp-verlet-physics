@@ -1,6 +1,7 @@
 #include "../../../include/Physics/Constraints/DistanceConstraint.h"
 
 #include <stdexcept>
+#include <iostream>
 
 Physics::DistanceConstraint::DistanceConstraint(Point *p1, Point *p2, float stiffness, float distance)
 {
@@ -19,13 +20,30 @@ void Physics::DistanceConstraint::solve(float dt)
     auto aToB = b->getPosition() - a->getPosition();
     auto aToBLen = glm::length(aToB);
 
+    // points already the right distance apart
+    if (aToBLen == distance)
+    {
+        return;
+    }
+
     auto diff = aToBLen - distance;
     auto dir = glm::normalize(aToB);
 
-    auto offset = dir * diff * stiffness * 0.5f;
+    // correct direction when points are 0 distance apart
+    // otherwise normalize results in divide by 0 and nan values
+    if (aToBLen == 0)
+    {
+        dir = glm::vec2(0);
+    }
 
-    a->setPosition(a->getPosition() + offset);
-    b->setPosition(b->getPosition() - offset);
+    float totalInvMass = a->getInvMass() + b->getInvMass();
+    if (totalInvMass == 0)
+        totalInvMass = 1;
+
+    auto offset = dir * diff * stiffness;
+
+    a->setPosition(a->getPosition() + offset * (a->getInvMass() / totalInvMass));
+    b->setPosition(b->getPosition() - offset * (b->getInvMass() / totalInvMass));
 }
 
 Physics::Point *Physics::DistanceConstraint::getP1()

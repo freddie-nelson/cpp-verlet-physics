@@ -20,6 +20,9 @@ void Physics::Point::move(glm::vec2 move)
 
 void Physics::Point::applyForce(glm::vec2 force)
 {
+    if (mass == 0)
+        return;
+
     newAcceleration += force / mass; // f = ma -> a = f / m
 }
 
@@ -30,7 +33,7 @@ float Physics::Point::getMass()
 
 void Physics::Point::setMass(float m)
 {
-    if (m <= 0)
+    if (m < 0)
         throw std::invalid_argument("Mass must be greater than or equal to 0.");
 
     mass = m;

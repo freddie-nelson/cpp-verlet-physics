@@ -51,9 +51,9 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
 
             float lambda = 1.0f / (t * t + (1 - t) * (1 - t));
 
-            float edgeMass = p1->getMass() + p2->getMass();
-            float p1MassCoeff = p1->getMass() / edgeMass;
-            float p2MassCoeff = p2->getMass() / edgeMass;
+            float edgeInvMass = p1->getInvMass() + p2->getInvMass();
+            float p1MassCoeff = p1->getInvMass() / edgeInvMass;
+            float p2MassCoeff = p2->getInvMass() / edgeInvMass;
 
             p1->setPosition(p1Pos - moveVector * (1 - t) * p1MassCoeff * lambda);
             p2->setPosition(p2Pos - moveVector * t * p2MassCoeff * lambda);

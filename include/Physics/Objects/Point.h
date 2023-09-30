@@ -22,6 +22,12 @@ namespace Physics
         void applyForce(glm::vec2 force);
 
         float getMass();
+
+        /**
+         * Sets the mass of the point.
+         *
+         * A mass of 0 will make the object immovable/static.
+         */
         void setMass(float m);
 
         float getInvMass();

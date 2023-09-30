@@ -111,7 +111,8 @@ int Application::init()
     // init physics
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.1f);
 
-    testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
+    // testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
+    testChain(glm::vec2(windowWidth / 2, 100), 5, 50, 1);
 
     return 0;
 }
@@ -182,6 +183,22 @@ void Application::testObjectsCollision(Physics::ObjectType type, float sizeA, fl
 
     world->addObject(a);
     world->addObject(b);
+}
+
+void Application::testChain(glm::vec2 start, int links, float linkLength, float linkStiffness)
+{
+    Physics::Point *last = new Physics::Point(start, 0);
+
+    for (int i = 0; i < links; i++)
+    {
+        Physics::Circle *c = new Physics::Circle(glm::vec2(start.x, start.y + linkLength * i), 10, 1, 1, 0.1, 0);
+        Physics::DistanceConstraint *d = new Physics::DistanceConstraint(last, c->getPoints()[0], linkStiffness);
+
+        world->addObject(c);
+        world->addConstraint(d);
+    }
+
+    last->applyForce(glm::vec2(100000, 0));
 }
 
 void Application::update(float dt)
