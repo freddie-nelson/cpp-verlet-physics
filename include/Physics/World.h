@@ -1,6 +1,7 @@
 #pragma once
 
 #include "./Objects/Object.h"
+#include "./Constraints/Constraint.h"
 #include "../Renderer/Renderer.h"
 #include "./Collision/Manifold.h"
 
@@ -32,6 +33,10 @@ namespace Physics
         void addObject(Object *o);
         bool removeObject(const Object *o);
 
+        std::vector<Constraint *> &getConstraints();
+        void addConstraint(Constraint *c);
+        bool removeConstraint(const Constraint *c);
+
     private:
         int windowWidth;
         int windowHeight;
@@ -40,6 +45,7 @@ namespace Physics
         float drag;
 
         std::vector<Object *> objects;
+        std::vector<Constraint *> constraints;
 
         void compareManifolds(std::vector<Manifold *> *a, std::vector<Manifold *> *b);
         void drawDebugManifolds(std::vector<Manifold *> *manifolds, Renderer::Renderer *renderer);

@@ -1,11 +1,12 @@
 #pragma once
 
 #include "./Point.h"
+#include "../Constraints/DistanceConstraint.h"
 
 namespace Physics
 {
 
-    class Edge
+    class Edge : public DistanceConstraint
     {
     public:
         /**
@@ -21,12 +22,6 @@ namespace Physics
 
         glm::vec2 getNormal(bool clockwise = true);
 
-        Point *getP1();
-        void setP1(Point *p);
-
-        Point *getP2();
-        void setP2(Point *p);
-
         bool getIsBrace();
 
         float getLength();
@@ -41,23 +36,7 @@ namespace Physics
          */
         void setLength(float l);
 
-        float getStiffness();
-
-        /**
-         * Sets the stiffness of the edge.
-         *
-         * The stiffness is a value between 0 and 1, where 0 is a completely flexible edge and 1 is a completely stiff edge.
-         *
-         * @param s The stiffness of the edge.
-         */
-        void setStiffness(float s);
-
     private:
-        Point *p1;
-        Point *p2;
-
         bool isBrace;
-        float length = -1.0f;
-        float stiffness = 0.0f;
     };
 }

@@ -63,7 +63,13 @@ void Physics::World::step(float dt, int substeps, Renderer::Renderer *renderer)
 
     for (int i = 0; i < substeps; i++)
     {
-        // apply constraints
+        // solve generic constraints
+        for (auto c : constraints)
+        {
+            c->solve(subDt);
+        }
+
+        // apply other constraints
         applyWindowConstraint(&objects, windowWidth, windowHeight);
         applyEdgeConstraint(&objects);
 
@@ -159,6 +165,31 @@ bool Physics::World::removeObject(const Physics::Object *o)
         if (*it.base() == o)
         {
             objects.erase(it);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::vector<Physics::Constraint *> &Physics::World::getConstraints()
+{
+    return constraints;
+}
+
+void Physics::World::addConstraint(Physics::Constraint *c)
+{
+    constraints.push_back(c);
+}
+
+bool Physics::World::removeConstraint(const Physics::Constraint *c)
+{
+
+    for (auto it = constraints.begin(); it < constraints.end(); it++)
+    {
+        if (*it.base() == c)
+        {
+            constraints.erase(it);
             return true;
         }
     }
