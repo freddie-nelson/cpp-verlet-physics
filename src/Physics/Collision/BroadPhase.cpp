@@ -4,6 +4,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <unordered_map>
 
 std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *> &objects, int maxGridSize, Renderer::Renderer *renderer)
 {
@@ -21,9 +22,13 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
 
     std::vector<BroadPhaseCellData> cells;
 
+    std::unordered_map<int, AABB *> aabbCache;
+
     for (auto o : objects)
     {
         auto aabb = o->getAABB();
+        aabbCache.emplace(o->getId(), &aabb);
+
         auto c = o->getCentre();
 
         if (std::isnan(c.x) || std::isnan(c.y))
@@ -146,10 +151,10 @@ std::vector<Physics::CollisionPair *> *Physics::broadPhase(std::vector<Object *>
                                 continue;
 
                             // check if the objects aabb's are colliding
-                            AABB a = o->getAABB();
-                            AABB b = no->getAABB();
+                            AABB *a = aabbCache[o->getId()];
+                            AABB *b = aabbCache[no->getId()];
 
-                            if (!aabbIntersects(&a, &b))
+                            if (!aabbIntersects(a, b))
                                 continue;
 
                             // add collision pair to list
