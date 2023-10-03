@@ -10,51 +10,58 @@ std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair
 
     for (auto p : *pairs)
     {
-        auto [a, b] = *p;
-
-        if (a == b)
-            continue;
-
-        Manifold *m = nullptr;
-
-        if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::CircleObject)
-        {
-            // circle vs circle
-            m = circleCircle(static_cast<Circle *>(a), static_cast<Circle *>(b));
-        }
-        else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::CircleObject)
-        {
-            // circle vs polygon
-            m = sat(b, a);
-        }
-        else if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::PolygonObject)
-        {
-            // circle vs polygon
-            m = sat(a, b);
-        }
-        else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::PolygonObject)
-        {
-            // polygon vs polygon
-            m = sat(a, b);
-        }
-        else
-        {
-            throw std::invalid_argument("Unsupported object type");
-        }
+        auto m = narrowPhasePair(p);
 
         if (m == nullptr)
             continue;
-
-        if (m->depth <= 0.0f)
-        {
-            delete m;
-            continue;
-        }
 
         manifolds->push_back(m);
     }
 
     return manifolds;
+}
+
+Physics::Manifold *Physics::narrowPhasePair(Physics::CollisionPair *pair)
+{
+    auto [a, b] = *pair;
+
+    if (a == b)
+        return nullptr;
+
+    Manifold *m = nullptr;
+
+    if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::CircleObject)
+    {
+        // circle vs circle
+        m = circleCircle(static_cast<Circle *>(a), static_cast<Circle *>(b));
+    }
+    else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::CircleObject)
+    {
+        // polygon vs circle
+        m = sat(b, a);
+    }
+    else if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::PolygonObject)
+    {
+        // circle vs polygon
+        m = sat(a, b);
+    }
+    else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::PolygonObject)
+    {
+        // polygon vs polygon
+        m = sat(a, b);
+    }
+    else
+    {
+        throw std::invalid_argument("Unsupported object type");
+    }
+
+    if (m != nullptr && m->depth == 0.0f)
+    {
+        delete m;
+        return nullptr;
+    }
+
+    return m;
 }
 
 // std::vector<Physics::Manifold *> *Physics::narrowPhaseSlow(std::vector<Object *> *objects)

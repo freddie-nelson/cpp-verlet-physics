@@ -1,12 +1,12 @@
 #pragma once
 
 #include "./Point.h"
-#include "../Constraints/DistanceConstraint.h"
+#include "../Constraints/DistanceConstraint/DistanceConstraintPoints.h"
 
 namespace Physics
 {
 
-    class Edge : public DistanceConstraint
+    class Edge : public DistanceConstraintPoints
     {
     public:
         /**
