@@ -35,6 +35,7 @@ private:
     void destroy();
 
     void testObjectsGrid(int count, Physics::ObjectType type, float size = 10, float force = 25000, float restitution = 1.0f, float friction = 0.0f, float drag = 0.0f);
+    void testObjectsGridMix(int count, float size = 10, float force = 25000, float restitution = 1.0f, float friction = 0.0f, float drag = 0.0f);
     void testObjectsCollision(Physics::ObjectType type, float sizeA = 10, float sizeB = 10, float force = 25000, float restitution = 1.0f, float friction = 0.0f, float drag = 0.0f);
     void testChain(glm::vec2 start, int links, float linkLength, float linkStiffness);
 

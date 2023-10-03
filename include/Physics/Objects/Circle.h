@@ -16,8 +16,12 @@ namespace Physics
 
         AABB getAABB();
 
+        /**
+         * Projects the circle onto the given axis.
+         */
+        void projectPointsToAxis(glm::vec2 axis, float &min, float &max);
+
     private:
-        glm::vec2 centre;
         float radius;
     };
 }

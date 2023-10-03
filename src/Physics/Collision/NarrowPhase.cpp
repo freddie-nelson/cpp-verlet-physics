@@ -25,10 +25,12 @@ std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair
         else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::CircleObject)
         {
             // circle vs polygon
+            m = sat(b, a);
         }
         else if (a->getType() == ObjectType::CircleObject && b->getType() == ObjectType::PolygonObject)
         {
             // circle vs polygon
+            m = sat(a, b);
         }
         else if (a->getType() == ObjectType::PolygonObject && b->getType() == ObjectType::PolygonObject)
         {
@@ -131,13 +133,20 @@ Physics::Manifold *Physics::circleCircle(Circle *a, Circle *b)
     return m;
 }
 
+/**
+ * Performs SAT collision detection.
+ *
+ * For circle vs polygon collision:
+ *  `a` = circle
+ *  `b` = polygon
+ */
 Physics::Manifold *Physics::sat(Object *a, Object *b)
 {
-    if (a->getType() != ObjectType::PolygonObject || b->getType() != ObjectType::PolygonObject)
-        throw std::invalid_argument("Objects must be polygons for SAT.");
+    if (a->getType() == ObjectType::CircleObject && b->getType() != ObjectType::PolygonObject)
+        throw std::invalid_argument("SAT circle vs polygon must have A as a circle and B as a polygon.");
 
     // get all edges
-    std::vector<Edge *> aEdges = a->getEdges();
+    std ::vector<Edge *> aEdges = a->getEdges();
     std::vector<Edge *> bEdges = b->getEdges();
 
     // min distance will be used as depth in manifold
@@ -192,6 +201,8 @@ Physics::Manifold *Physics::sat(Object *a, Object *b)
     Manifold *m = new Manifold();
 
     // make sure edge is on b and point is on a
+    // this also insures that sat works for circles
+    // since circles are always passed in as a to the function
     if (edgeParent != b)
     {
         auto temp = a;
@@ -243,7 +254,17 @@ void Physics::projectPointsToAxis(Object *o, glm::vec2 &axis, float &min, float 
     min = FLT_MAX;
     max = -FLT_MAX;
 
-    for (auto p : o->getPoints())
+    std::vector<Point *> *points = &o->getPoints();
+
+    // get points on edge of circle to project
+    if (o->getType() == Physics::ObjectType::CircleObject)
+    {
+        auto c = static_cast<Circle *>(o);
+        c->projectPointsToAxis(axis, min, max);
+        return;
+    }
+
+    for (auto p : *points)
     {
         float dot = glm::dot(p->getPosition(), axis);
         if (dot < min)

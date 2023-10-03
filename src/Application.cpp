@@ -112,7 +112,19 @@ int Application::init()
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.1f);
 
     // testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
-    testChain(glm::vec2(windowWidth / 2, 100), 5, 50, 1);
+    testObjectsGridMix(100, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
+    // testChain(glm::vec2(windowWidth / 2, 100), 5, 50, 1);
+
+    // float force = 50000;
+
+    // Physics::Circle *a = new Physics::Circle(glm::vec2(150, windowHeight / 2), 20, 10);
+    // Physics::Rect *b = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
+
+    // a->applyForce(glm::vec2(force, 0), a->getCentre());
+    // b->applyForce(glm::vec2(-force, 0), b->getCentre());
+
+    // world->addObject(a);
+    // world->addObject(b);
 
     return 0;
 }
@@ -140,6 +152,38 @@ void Application::testObjectsGrid(int count, Physics::ObjectType type, float siz
             o = new Physics::Circle(glm::vec2(x, y), size / 2.0f, size * 0.1f, restitution, friction, drag);
         }
         else if (type == Physics::ObjectType::PolygonObject)
+        {
+            o = new Physics::Rect(glm::vec2(x, y), size, size, size * 0.1f, restitution, friction, drag);
+        }
+
+        o->applyForce(glm::vec2(force, force) * float(int(x + y) % 7), o->getCentre());
+
+        world->addObject(o);
+
+        // update x and y
+        x += size * 1.5f;
+        if (x + size > windowWidth - padding)
+        {
+            x = padding;
+            y += size * 1.5f;
+        }
+    }
+}
+
+void Application::testObjectsGridMix(int count, float size, float force, float restitution, float friction, float drag)
+{
+    int padding = size;
+    int x = padding;
+    int y = padding;
+
+    for (int i = 0; i < count; i++)
+    {
+        Physics::Object *o;
+        if (rand() % 2 == 0)
+        {
+            o = new Physics::Circle(glm::vec2(x, y), size / 2.0f, size * 0.1f, restitution, friction, drag);
+        }
+        else
         {
             o = new Physics::Rect(glm::vec2(x, y), size, size, size * 0.1f, restitution, friction, drag);
         }
