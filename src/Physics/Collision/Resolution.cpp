@@ -73,8 +73,9 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         // this should be negative
         // as friction direction is in opposite direction to velocity
         float frictionDirVelocity = glm::dot(frictionDir, pa->getVelocity());
+        float frictionCoeff = a->getType() == Physics::ObjectType::CircleObject ? 0.1 : 1;
 
-        pa->setPosition(pa->getPosition() - frictionDir * frictionDirVelocity * friction);
+        pa->setPosition(pa->getPosition() - frictionDir * frictionDirVelocity * friction * frictionCoeff);
 
         // if (std::isnan(pa->getPosition().x))
         // {
