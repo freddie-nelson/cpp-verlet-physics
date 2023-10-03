@@ -156,12 +156,8 @@ Physics::Manifold *Physics::sat(Object *a, Object *b)
     std ::vector<Edge *> aEdges = a->getEdges();
     std::vector<Edge *> bEdges = b->getEdges();
 
-    // min distance will be used as depth in manifold
-    float minDistance = FLT_MAX;
-    Edge *edge = nullptr;
-    Object *edgeParent = nullptr;
-
-    // loop through all edges of a and b
+    // get all axes
+    std::vector<Axis> axes;
     for (int i = 0; i < aEdges.size() + bEdges.size(); i++)
     {
         Edge *e;
@@ -182,6 +178,70 @@ Physics::Manifold *Physics::sat(Object *a, Object *b)
             continue;
 
         glm::vec2 axis = e->getNormal();
+
+        axes.push_back(Axis{
+            axis,
+            e,
+            parent,
+        });
+    }
+
+    // add closest point axis for circle vs polygon
+    if (a->getType() == ObjectType::CircleObject)
+    {
+        // find closest point to circle
+        float minDist = FLT_MAX;
+        Point *closest;
+
+        for (auto p : b->getPoints())
+        {
+            auto aToP = p->getPosition() - a->getCentre();
+            auto dist = glm::dot(aToP, aToP);
+
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closest = p;
+            }
+        }
+
+        // get axis
+        auto closestToA = a->getCentre() - closest->getPosition();
+        auto axis = glm::normalize(closestToA);
+
+        // find edge closest point is part of with normal pointing in direction of axis (towards circle)
+        float bestDir = -FLT_MAX;
+        Edge *edge;
+
+        for (auto e : b->getEdges())
+        {
+            if (e->getP1() != closest && e->getP2() != closest)
+                continue;
+
+            float dir = glm::dot(e->getNormal(), axis);
+            if (dir > bestDir)
+            {
+                bestDir = dir;
+                edge = e;
+            }
+        }
+
+        axes.push_back(Axis{
+            axis,
+            edge,
+            b,
+        });
+    }
+
+    // min distance will be used as depth in manifold
+    float minDistance = FLT_MAX;
+    Edge *edge = nullptr;
+    Object *edgeParent = nullptr;
+
+    // loop through axes
+    for (auto &axisData : axes)
+    {
+        auto [axis, e, parent] = axisData;
 
         // project all points onto axis
         float minA, maxA, minB, maxB;

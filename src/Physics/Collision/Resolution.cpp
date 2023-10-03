@@ -18,6 +18,10 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         float invMassB = b->getInvMass();
         float totalInvMass = invMassA + invMassB;
 
+        // fix collisions with 2 massless objects
+        if (totalInvMass == 0)
+            totalInvMass = 1;
+
         float massCoeffA = invMassA / totalInvMass;
         float restitutionCoeff = std::min(a->getRestitution(), b->getRestitution()) + 0.6f;
 
@@ -52,6 +56,11 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
             float lambda = 1.0f / (t * t + (1 - t) * (1 - t));
 
             float edgeInvMass = p1->getInvMass() + p2->getInvMass();
+
+            // fix collisions with massless object
+            if (edgeInvMass == 0)
+                edgeInvMass = 1;
+
             float p1MassCoeff = p1->getInvMass() / edgeInvMass;
             float p2MassCoeff = p2->getInvMass() / edgeInvMass;
 

@@ -22,8 +22,9 @@ namespace Physics
 
     Manifold *circleCircle(Circle *a, Circle *b);
 
-    struct EdgeData
+    struct Axis
     {
+        glm::vec2 axis;
         Edge *edge;
         Object *parent;
     };

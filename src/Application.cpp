@@ -110,22 +110,23 @@ int Application::init()
     renderer = new Renderer::SDLRenderer(sdlRenderer);
 
     // init physics
-    world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 200.0f), 0.1f);
+    world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 0.0f), 0.1f);
 
     // testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
-    testObjectsGridMix(100, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
+    // testObjectsGridMix(100, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
     // testChain(glm::vec2(windowWidth / 2, 100), 5, 50, 1);
 
-    // float force = 50000;
+    float force = 50000;
 
     // Physics::Circle *a = new Physics::Circle(glm::vec2(150, windowHeight / 2), 20, 10);
-    // Physics::Rect *b = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
+    Physics::Rect *a = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
+    Physics::Rect *b = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 0);
 
-    // a->applyForce(glm::vec2(force, 0), a->getCentre());
-    // b->applyForce(glm::vec2(-force, 0), b->getCentre());
+    a->applyForce(glm::vec2(force, 0), a->getCentre());
+    b->applyForce(glm::vec2(-force, 0), b->getCentre());
 
-    // world->addObject(a);
-    // world->addObject(b);
+    world->addObject(a);
+    world->addObject(b);
 
     return 0;
 }
