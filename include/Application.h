@@ -3,6 +3,7 @@
 #include "../include/Physics/World.h"
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Object.h"
+#include "../include/Physics/Constraints/DistanceConstraint/DistanceConstraintObjects.h"
 
 #include <string>
 #include <SDL2/SDL.h>
@@ -40,6 +41,9 @@ private:
 
     Renderer::SDLRenderer *renderer;
     Physics::World *world;
+
+    Physics::DistanceConstraintObjects *mouseConstraint;
+    void updateMouseConstraint(float grabRadius = 5);
 
     void update(float dt);
     void render(bool clear = true);

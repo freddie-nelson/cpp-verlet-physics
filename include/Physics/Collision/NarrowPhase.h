@@ -10,6 +10,12 @@
 namespace Physics
 {
     std::vector<Manifold *> *narrowPhase(std::vector<CollisionPair *> *pairs);
+
+    /**
+     * @returns the manifold when there is a collision, otherwise `nullptr`
+     */
+    Manifold *narrowPhasePair(CollisionPair *pair);
+
     // std::vector<Manifold *> *narrowPhaseSlow(std::vector<Object *> *objects);
 
     void cleanupManifolds(std::vector<Manifold *> *manifolds);

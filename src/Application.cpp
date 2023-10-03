@@ -2,6 +2,7 @@
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Circle.h"
 #include "../include/Physics/Objects/Rect.h"
+#include "../include/Physics/Collision/NarrowPhase.h"
 #include "../include/Globals.h"
 
 #include <math.h>
@@ -192,13 +193,65 @@ void Application::testChain(glm::vec2 start, int links, float linkLength, float 
     for (int i = 0; i < links; i++)
     {
         Physics::Circle *c = new Physics::Circle(glm::vec2(start.x, start.y + linkLength * i), 10, 1, 1, 0.1, 0);
-        Physics::DistanceConstraint *d = new Physics::DistanceConstraint(last, c->getPoints()[0], linkStiffness);
+        Physics::DistanceConstraintPoints *d = new Physics::DistanceConstraintPoints(last, c->getPoints()[0], linkStiffness);
 
         world->addObject(c);
         world->addConstraint(d);
+
+        last = c->getPoints()[0];
     }
 
-    last->applyForce(glm::vec2(100000, 0));
+    last->applyForce(glm::vec2(20000, 0));
+}
+
+void Application::updateMouseConstraint(float grabRadius)
+{
+    int mouseX, mouseY;
+    Uint32 buttons = SDL_GetMouseState(&mouseX, &mouseY);
+    bool leftMouseDown = buttons & SDL_BUTTON(1);
+
+    if (leftMouseDown && mouseConstraint != nullptr)
+    {
+        // update position of mouse constraint
+        auto points = mouseConstraint->getA()->getPoints();
+        auto c = points[0];
+
+        c->setPosition(glm::vec2(mouseX, mouseY));
+    }
+    else if (leftMouseDown)
+    {
+        // find new object to grab
+        auto mousePoint = new Physics::Circle(glm::vec2(mouseX, mouseY), grabRadius, 0, 0, 0, 0);
+        Physics::Object *grab = nullptr;
+
+        for (auto o : world->getObjects())
+        {
+            Physics::CollisionPair p{a : mousePoint, b : o};
+
+            auto m = Physics::narrowPhasePair(&p);
+            if (m == nullptr)
+                continue;
+
+            grab = o;
+            break;
+        }
+
+        // user didnt grab any object
+        if (grab == nullptr)
+            return;
+
+        // create distance constraint
+        mouseConstraint = new Physics::DistanceConstraintObjects(mousePoint, grab, 1, 0);
+        world->addConstraint(mouseConstraint);
+    }
+    else if (mouseConstraint != nullptr)
+    {
+        world->removeConstraint(mouseConstraint);
+
+        delete mouseConstraint->getA();
+        delete mouseConstraint;
+        mouseConstraint = nullptr;
+    }
 }
 
 void Application::update(float dt)
@@ -210,6 +263,9 @@ void Application::update(float dt)
     world->step(physicsDt, 8, renderer);
     int endPhysics = SDL_GetTicks64();
 
+    // update mouse constraint
+    updateMouseConstraint(5.0f);
+
     // print timestep info
     // std::cout << "\rke: " << 0 << ", physics (ms): " << endPhysics - startPhysics << ", physics dt: " << physicsDt << ", dt: " << dt << "                  ";
 }
@@ -219,6 +275,17 @@ void Application::render(bool clear)
     // clear last frame
     if (clear)
         renderer->clear();
+
+    // add physics constraints to renderer
+    for (auto c : world->getConstraints())
+    {
+        if (typeid(*c) == typeid(Physics::DistanceConstraintPoints))
+        {
+            Physics::DistanceConstraintPoints *dc = static_cast<Physics::DistanceConstraintPoints *>(c);
+
+            renderer->line(dc->getP1()->getPosition(), dc->getP2()->getPosition(), Renderer::Color{r : 150, g : 150, b : 150, a : 255});
+        }
+    }
 
     // add physics objects to renderer
     const Renderer::Color color{r : 255, g : 255, b : 255, a : 255};

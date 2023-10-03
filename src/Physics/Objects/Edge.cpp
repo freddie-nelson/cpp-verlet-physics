@@ -2,7 +2,7 @@
 
 #include <glm/glm.hpp>
 
-Physics::Edge::Edge(Point *p1, Point *p2, bool isBrace, float stiffness, float length) : DistanceConstraint(p1, p2, stiffness, length), isBrace(isBrace)
+Physics::Edge::Edge(Point *p1, Point *p2, bool isBrace, float stiffness, float length) : DistanceConstraintPoints(p1, p2, stiffness, length), isBrace(isBrace)
 {
     setLength(length);
 }
