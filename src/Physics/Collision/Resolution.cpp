@@ -80,20 +80,24 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         // apply friction
         float friction = std::fmax(a->getFriction(), b->getFriction());
 
-        // get direction perpendicular to normal and in the opposite direction of the objects velocity
-        glm::vec2 frictionDir = glm::vec2(-normal.y, normal.x);
-
-        if (glm::dot(frictionDir, pa->getVelocity()) > 0)
+        if (friction != 0)
         {
-            frictionDir = -frictionDir;
+
+            // get direction perpendicular to normal and in the opposite direction of the objects velocity
+            glm::vec2 frictionDir = glm::vec2(-normal.y, normal.x);
+
+            if (glm::dot(frictionDir, pa->getVelocity()) > 0)
+            {
+                frictionDir = -frictionDir;
+            }
+
+            // this should be negative
+            // as friction direction is in opposite direction to velocity
+            float frictionDirVelocity = glm::dot(frictionDir, pa->getVelocity());
+            float frictionCoeff = a->getType() == Physics::ObjectType::CircleObject ? 0.1 : 1;
+
+            pa->setPosition(pa->getPosition() - frictionDir * frictionDirVelocity * friction * frictionCoeff);
         }
-
-        // this should be negative
-        // as friction direction is in opposite direction to velocity
-        float frictionDirVelocity = glm::dot(frictionDir, pa->getVelocity());
-        float frictionCoeff = a->getType() == Physics::ObjectType::CircleObject ? 0.1 : 1;
-
-        pa->setPosition(pa->getPosition() - frictionDir * frictionDirVelocity * friction * frictionCoeff);
 
         // if (std::isnan(pa->getPosition().x))
         // {
