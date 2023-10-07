@@ -75,7 +75,8 @@ namespace Physics
         void addEdge(Edge *e);
         void removeEdge(Edge *e);
 
-        glm::vec2 getCentre();
+        virtual void setCentre(glm::vec2 c) = 0;
+        virtual glm::vec2 getCentre();
 
         virtual AABB getAABB();
 

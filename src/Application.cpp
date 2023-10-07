@@ -2,6 +2,7 @@
 #include "../include/Renderer/SDLRenderer.h"
 #include "../include/Physics/Objects/Circle.h"
 #include "../include/Physics/Objects/Rect.h"
+#include "../include/Physics/Objects/RegularPolygon.h"
 #include "../include/Physics/Collision/NarrowPhase.h"
 #include "../include/Globals.h"
 
@@ -113,20 +114,20 @@ int Application::init()
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 0.0f), 0.1f);
 
     // testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
-    // testObjectsGridMix(100, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
+    testObjectsGridMix(100, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
     // testChain(glm::vec2(windowWidth / 2, 100), 5, 50, 1);
 
-    float force = 50000;
+    // float force = 0;
 
-    // Physics::Circle *a = new Physics::Circle(glm::vec2(150, windowHeight / 2), 20, 10);
-    Physics::Rect *a = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
-    Physics::Rect *b = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 0);
+    // Physics::RegularPolygon *a = new Physics::RegularPolygon(glm::vec2(150, windowHeight / 2), 20, 32, 10);
+    // Physics::Rect *a = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
+    // Physics::Rect *b = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
 
-    a->applyForce(glm::vec2(force, 0), a->getCentre());
-    b->applyForce(glm::vec2(-force, 0), b->getCentre());
+    // a->applyForce(glm::vec2(force, 0), a->getCentre());
+    // b->applyForce(glm::vec2(-force, 0), b->getCentre());
 
-    world->addObject(a);
-    world->addObject(b);
+    // world->addObject(a);
+    // world->addObject(b);
 
     return 0;
 }
@@ -183,7 +184,8 @@ void Application::testObjectsGridMix(int count, float size, float force, float r
         Physics::Object *o;
         if (rand() % 2 == 0)
         {
-            o = new Physics::Circle(glm::vec2(x, y), size / 2.0f, size * 0.1f, restitution, friction, drag);
+            // o = new Physics::Circle(glm::vec2(x, y), size / 2.0f, size * 0.1f, restitution, friction, drag);
+            o = new Physics::RegularPolygon(glm::vec2(x, y), size * 0.5f, size * 0.75f, size * 0.1f, restitution, friction, drag);
         }
         else
         {
@@ -337,6 +339,19 @@ void Application::render(bool clear)
 
     for (auto o : world->getObjects())
     {
+        // draw braces
+        if (Globals::DEBUG_MODE && o->getType() == Physics::ObjectType::PolygonObject)
+        {
+            for (auto e : o->getEdges())
+            {
+                if (e->getIsBrace())
+                {
+                    renderer->line(e->getP1()->getPosition(), e->getP2()->getPosition(), Renderer::Color{r : 0, g : 0, b : 180, a : 255});
+                }
+            }
+        }
+
+        // draw object
         if (o->getType() == Physics::ObjectType::CircleObject)
         {
             Physics::Circle *c = static_cast<Physics::Circle *>(o);
@@ -370,7 +385,7 @@ void Application::render(bool clear)
                 w : aabb.max.x - aabb.min.x,
                 h : aabb.max.y - aabb.min.y
             };
-            renderer->rect(rect, Renderer::Color{r : 0, g : 255, b : 0, a : 125});
+            renderer->rect(rect, Renderer::Color{r : 0, g : 180, b : 0, a : 255});
         }
     }
 

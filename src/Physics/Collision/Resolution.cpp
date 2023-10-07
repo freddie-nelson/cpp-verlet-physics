@@ -30,7 +30,7 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         pa->move(moveVector);
 
         // edge resolution code
-        if (edge != nullptr)
+        if (edge != nullptr && invMassB != 0)
         {
             auto p1 = edge->getP1();
             auto p2 = edge->getP2();

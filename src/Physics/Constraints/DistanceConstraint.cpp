@@ -22,7 +22,7 @@ void Physics::DistanceConstraint::setDistance(float d)
     }
     else
     {
-        throw std::invalid_argument("Distance must be greater than or equal to 0 or -1.");
+        throw std::invalid_argument("Distance must be greater than or equal to 0.");
     }
 }
 
