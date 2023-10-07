@@ -15,6 +15,12 @@ std::vector<Physics::Manifold *> *Physics::narrowPhase(std::vector<CollisionPair
         if (m == nullptr)
             continue;
 
+        // emit collision event
+        m->a->emit("collision", EventData{
+                                    "collision",
+                                    m,
+                                });
+
         manifolds->push_back(m);
     }
 

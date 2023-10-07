@@ -1,6 +1,7 @@
 #include "../../../include/Physics/Objects/Object.h"
 
 #include <stdexcept>
+#include <iostream>
 
 int Physics::Object::nextId = 0;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../Utility/EventEmitter.h"
 #include "./Point.h"
 #include "./AABB.h"
 #include "./Edge.h"
@@ -16,7 +17,25 @@ namespace Physics
         PolygonObject,
     };
 
-    class Object
+    struct EventData
+    {
+        std::string event;
+        void *data;
+    };
+
+    /**
+     * Base class for all objects in the physics engine.
+     *
+     * This class is abstract and should not be instantiated.
+     *
+     * This class is also an event emitter and emits the following events:
+     *
+     * - collision: emitted when the object collides with another object
+     *   `data`: `Manifold *`
+     * - resolution: emitted when the object is resolved from a collision
+     *   `data`: `Manifold *`
+     */
+    class Object : public EventEmitter<EventData>
     {
     public:
         Object(ObjectType type, std::vector<glm::vec2> &points, float mass = 1.0f, float restitution = 1.0f, float friction = 0.0f, float drag = 0.0f);

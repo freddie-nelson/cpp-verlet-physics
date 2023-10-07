@@ -114,20 +114,20 @@ int Application::init()
     world = new Physics::World(windowWidth, windowHeight, glm::vec2(0.0f, 0.0f), 0.1f);
 
     // testObjectsGrid(100, Physics::ObjectType::PolygonObject, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
-    testObjectsGridMix(100, 30.0f, 20000, 1.0f, 0.1f, 0.0f);
+    // testObjectsGridMix(20, 60.0f, 20000, 1.0f, 0.1f, 0.0f);
     // testChain(glm::vec2(windowWidth / 2, 100), 5, 50, 1);
 
-    // float force = 0;
+    float force = 80000;
 
-    // Physics::RegularPolygon *a = new Physics::RegularPolygon(glm::vec2(150, windowHeight / 2), 20, 32, 10);
-    // Physics::Rect *a = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
-    // Physics::Rect *b = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 40, 40, 10);
+    // Physics::RegularPolygon *a = new Physics::RegularPolygon(glm::vec2(150, windowHeight / 2), 40, 4, 2);
+    Physics::Rect *a = new Physics::Rect(glm::vec2(150, windowHeight / 2), 60, 60, 10);
+    Physics::Rect *b = new Physics::Rect(glm::vec2(windowWidth - 150, windowHeight / 2), 80, 80, 100);
 
-    // a->applyForce(glm::vec2(force, 0), a->getCentre());
-    // b->applyForce(glm::vec2(-force, 0), b->getCentre());
+    a->applyForce(glm::vec2(force, 0), a->getCentre());
+    b->applyForce(glm::vec2(-force, 0), b->getCentre());
 
-    // world->addObject(a);
-    // world->addObject(b);
+    world->addObject(a);
+    world->addObject(b);
 
     return 0;
 }
@@ -185,7 +185,7 @@ void Application::testObjectsGridMix(int count, float size, float force, float r
         if (rand() % 2 == 0)
         {
             // o = new Physics::Circle(glm::vec2(x, y), size / 2.0f, size * 0.1f, restitution, friction, drag);
-            o = new Physics::RegularPolygon(glm::vec2(x, y), size * 0.5f, size * 0.75f, size * 0.1f, restitution, friction, drag);
+            o = new Physics::RegularPolygon(glm::vec2(x, y), size * 0.5f, std::min(int(size * 0.75f), 24), size * 0.1f, restitution, friction, drag);
         }
         else
         {

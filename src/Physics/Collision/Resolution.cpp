@@ -26,7 +26,7 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         float restitutionCoeff = std::min(a->getRestitution(), b->getRestitution()) + 0.6f;
 
         // halfed because we want to move each object half the depth
-        auto moveVector = normal * depth * restitutionCoeff * massCoeffA;
+        auto moveVector = normal * depth * massCoeffA * restitutionCoeff;
         pa->move(moveVector);
 
         // edge resolution code
@@ -64,9 +64,18 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
             float p1MassCoeff = p1->getInvMass() / edgeInvMass;
             float p2MassCoeff = p2->getInvMass() / edgeInvMass;
 
-            p1->setPosition(p1Pos - moveVector * (1 - t) * p1MassCoeff * lambda);
-            p2->setPosition(p2Pos - moveVector * t * p2MassCoeff * lambda);
+            glm::vec2 p1MoveVector = moveVector * (1 - t) * p1MassCoeff * lambda;
+            glm::vec2 p2MoveVector = moveVector * t * p2MassCoeff * lambda;
+
+            p1->setPosition(p1Pos - p1MoveVector);
+            p2->setPosition(p2Pos - p2MoveVector);
         }
+
+        // apply velocity changes to create realistic collisions
+        // float totalMass = a->getMass() + b->getMass();
+
+        // auto oldToNew = pa->getPosition() - pa->getOldPosition();
+        // pa->setOldPosition(pa->getOldPosition() + oldToNew * (a->getMass() / totalMass));
 
         // apply friction
         float friction = std::fmax(a->getFriction(), b->getFriction());
@@ -92,5 +101,8 @@ void Physics::resolveCollisions(std::vector<Manifold *> *manifolds)
         // }
 
         // std::cout << "velocity after: " << pa->getVelocity().x << ", " << pa->getVelocity().y << std::endl;
+
+        // emit resolution event
+        a->emit("resolution", EventData{"resolution", m});
     }
 }

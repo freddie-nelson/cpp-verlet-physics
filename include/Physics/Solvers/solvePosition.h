@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../Objects/Point.h"
 
 namespace Physics
