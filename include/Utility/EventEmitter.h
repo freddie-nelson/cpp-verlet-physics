@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <bits/stdc++.h>
+#include <functional>
+#include <unordered_map>
 
 template <typename T>
 class EventEmitter
@@ -13,7 +14,7 @@ public:
     void emit(std::string event, T data);
 
 private:
-    std::map<std::string, std::vector<std::function<void(T)>>> listeners;
+    std::unordered_map<std::string, std::vector<std::function<void(T)>>> listeners;
 };
 
 template <typename T>
